@@ -6,22 +6,27 @@
     android:background="#FFF5EB"
     android:padding="16dp">
 
-    <!-- Featured Painting Image -->
+    <!-- Painting Image Container -->
     <FrameLayout
         android:id="@+id/paintingImageContainer"
         android:layout_width="0dp"
         android:layout_height="300dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.9">
 
+        <!-- Painting Image -->
         <ImageView
             android:id="@+id/paintingImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:contentDescription="Painting Image" />
+            android:scaleType="centerInside"
+            android:contentDescription="Painting Image"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="center" />
 
         <!-- Zoom Icon -->
         <ImageView
@@ -37,109 +42,108 @@
 
     </FrameLayout>
 
-    <!-- Painting Title and Heart Button -->
-    <LinearLayout
-        android:id="@+id/titleContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toBottomOf="@id/paintingImageContainer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
-
-        <TextView
-            android:id="@+id/paintingTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#800080"
-            android:fontFamily="@font/caveat" />
-
-        <ImageButton
-            android:id="@+id/heartButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/rounded_button"
-            android:src="@drawable/ic_heart_white"
-            android:contentDescription="@string/heart_button"
-            android:padding="12dp" />
-
-    </LinearLayout>
-
-    <!-- Painting Description -->
-    <TextView
-        android:id="@+id/paintingDescription"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:lineSpacingExtra="4dp"
-        android:textColor="#666666"
-        app:layout_constraintTop_toBottomOf="@id/titleContainer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
-
-    <!-- Artist Name -->
-    <TextView
-        android:id="@+id/artistName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textStyle="italic"
-        android:text="Artist Name"
-        android:textColor="#666666"
-        app:layout_constraintTop_toBottomOf="@id/paintingDescription"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
-
-    <!-- Painting Price -->
-    <TextView
-        android:id="@+id/paintingPrice"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:text="Painting Price"
-        android:textColor="#800080"
-        app:layout_constraintTop_toBottomOf="@id/artistName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp" />
-
-    <!-- Add to Tote Bag Button -->
-    <Button
-        android:id="@+id/addToToteBagButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add to Tote Bag!"
-        android:textColor="#FFF"
-        style="@style/RoundedButton"
-        android:background="@drawable/rounded_button"
-        android:paddingHorizontal="24dp"
-        app:layout_constraintTop_toBottomOf="@id/paintingPrice"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
-
-    <!-- Comments Section -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/commentsRecyclerView"
+    <!-- ScrollView for painting details -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/addToToteBagButton"
+        app:layout_constraintTop_toBottomOf="@id/paintingImageContainer"
         app:layout_constraintBottom_toTopOf="@id/commentInputContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="0dp"
-        android:padding="8dp"
-        android:clipToPadding="false"
-        android:background="#FFF5EB" />
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Painting Title and Heart Button -->
+            <LinearLayout
+                android:id="@+id/titleContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:id="@+id/paintingTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#800080"
+                    android:fontFamily="@font/caveat" />
+
+                <ImageButton
+                    android:id="@+id/heartButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/rounded_button"
+                    android:src="@drawable/ic_heart_white"
+                    android:contentDescription="@string/heart_button"
+                    android:padding="12dp" />
+
+            </LinearLayout>
+
+            <!-- Painting Description -->
+            <TextView
+                android:id="@+id/paintingDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:lineSpacingExtra="4dp"
+                android:textColor="#666666"
+                android:layout_marginTop="8dp" />
+
+            <!-- Artist Name -->
+            <TextView
+                android:id="@+id/artistName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textStyle="italic"
+                android:text="Artist Name"
+                android:textColor="#666666"
+                android:layout_marginTop="8dp" />
+
+            <!-- Painting Price -->
+            <TextView
+                android:id="@+id/paintingPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="Painting Price"
+                android:textColor="#800080"
+                android:layout_marginTop="4dp" />
+
+            <!-- Add to Tote Bag Button -->
+            <Button
+                android:id="@+id/addToToteBagButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add to Tote Bag!"
+                android:textColor="#FFF"
+                style="@style/RoundedButton"
+                android:background="@drawable/rounded_button"
+                android:paddingHorizontal="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal" />
+
+            <!-- Comments Section -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/commentsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="8dp"
+                android:clipToPadding="false"
+                android:background="#FFF5EB" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- Divider above comment input -->
     <View

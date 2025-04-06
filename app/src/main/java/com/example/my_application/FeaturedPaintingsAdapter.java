@@ -35,7 +35,7 @@ public class FeaturedPaintingsAdapter extends RecyclerView.Adapter<FeaturedPaint
         holder.titleTextView.setText(painting.getTitle());
         holder.artistTextView.setText(painting.getArtist());
         holder.priceTextView.setText(painting.getPrice());
-        holder.mediumTextView.setText(painting.getMedium());
+        // Remove medium-related code
 
         // Load image using Glide
         Glide.with(context)
@@ -50,9 +50,7 @@ public class FeaturedPaintingsAdapter extends RecyclerView.Adapter<FeaturedPaint
             intent.putExtra("painting_name", painting.getTitle());
             intent.putExtra("artist_name", painting.getArtist());
             intent.putExtra("painting_price", "Rs. " + painting.getPrice());
-            intent.putExtra("painting_medium", painting.getMedium());
             intent.putExtra("painting_image", painting.getImageUrl());
-            // Don't set paintingId since this is from featured paintings
             context.startActivity(intent);
         });
     }
@@ -67,7 +65,7 @@ public class FeaturedPaintingsAdapter extends RecyclerView.Adapter<FeaturedPaint
         TextView titleTextView;
         TextView artistTextView;
         TextView priceTextView;
-        TextView mediumTextView;
+        // Remove mediumTextView declaration
 
         PaintingViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -75,7 +73,7 @@ public class FeaturedPaintingsAdapter extends RecyclerView.Adapter<FeaturedPaint
             titleTextView = itemView.findViewById(R.id.paintingTitleTextView);
             artistTextView = itemView.findViewById(R.id.artistNameTextView);
             priceTextView = itemView.findViewById(R.id.priceTextView);
-            mediumTextView = itemView.findViewById(R.id.mediumTextView);
+            // Remove mediumTextView initialization
         }
     }
 } 

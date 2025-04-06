@@ -322,10 +322,31 @@ public class PaintingDetailActivity extends AppCompatActivity {
     private void setupAddToToteBagButton() {
         addToToteBagButton.setOnClickListener(v -> {
             ToteBag toteBag = ToteBag.getInstance(this);
-            if (!toteBag.isPaintingInBag(currentPainting)) {
-                toteBag.addPainting(currentPainting);
+            
+            // Create a painting object with all necessary information
+            Painting paintingToAdd;
+            if (paintingResId != 0) {
+                // For resource-based paintings
+                paintingToAdd = new Painting(
+                    paintingName,
+                    artistName,
+                    paintingPrice,
+                    paintingResId
+                );
+            } else {
+                // For URL-based paintings
+                paintingToAdd = new Painting(
+                    paintingName,
+                    artistName,
+                    paintingPrice,
+                    paintingImage  // URL for featured paintings
+                );
+            }
+
+            if (!toteBag.isPaintingInBag(paintingToAdd)) {
+                toteBag.addPainting(paintingToAdd);
                 Toast.makeText(this, "Added to Tote Bag", Toast.LENGTH_SHORT).show();
-                updateHeartButtonState(currentPainting);
+                updateHeartButtonState(paintingToAdd);
             } else {
                 Toast.makeText(this, "Already in Tote Bag", Toast.LENGTH_SHORT).show();
             }
@@ -432,45 +453,35 @@ public class PaintingDetailActivity extends AppCompatActivity {
     private void loadPaintingDetails() {
         Intent intent = getIntent();
         if (intent != null) {
-            // Get painting name with debug logging
             paintingName = intent.getStringExtra("painting_name");
-            Log.d(TAG, "Received painting name: " + paintingName);
-
-            // Set the title with visibility check
-            if (paintingTitle != null && paintingName != null) {
-                paintingTitle.setText(paintingName);
-                paintingTitle.setVisibility(View.VISIBLE);
-                Log.d(TAG, "Set painting title text to: " + paintingName);
-            } else {
-                Log.e(TAG, "Failed to set title. paintingTitle: " + (paintingTitle != null) + 
-                          ", paintingName: " + (paintingName != null));
-            }
-
-            // Get all possible extras with null checks
             paintingResId = intent.getIntExtra("paintingResId", 0);
             paintingImage = intent.getStringExtra("painting_image");
             String artistName = intent.getStringExtra("artist_name");
             String paintingPrice = intent.getStringExtra("painting_price");
-            String paintingMedium = intent.getStringExtra("painting_medium");
 
-            // Add debug logging
-            Log.d(TAG, "Loading painting details:");
-            Log.d(TAG, "ResId: " + paintingResId);
-            Log.d(TAG, "Image URL: " + paintingImage);
-            Log.d(TAG, "Artist: " + artistName);
-            Log.d(TAG, "Price: " + paintingPrice);
-            Log.d(TAG, "Medium: " + paintingMedium);
+            // Create current painting object
+            if (paintingResId != 0) {
+                currentPainting = new Painting(
+                    paintingName != null ? paintingName : "",
+                    artistName != null ? artistName : "",
+                    paintingPrice != null ? paintingPrice : "",
+                    paintingResId
+                );
+            } else {
+                currentPainting = new Painting(
+                    paintingName != null ? paintingName : "",
+                    artistName != null ? artistName : "",
+                    paintingPrice != null ? paintingPrice : "",
+                    paintingImage != null ? paintingImage : ""
+                );
+            }
 
-            // Create current painting object with safe values
-            currentPainting = new Painting(
-                paintingName != null ? paintingName : "",
-                artistName != null ? artistName : "",
-                paintingPrice != null ? paintingPrice : "",
-                paintingMedium != null ? paintingMedium : "",
-                paintingImage != null ? paintingImage : ""
-            );
-
-            // Set the views with null checks and debug messages
+            // Set the views
+            if (paintingTitle != null && paintingName != null) {
+                paintingTitle.setText(paintingName);
+                paintingTitle.setVisibility(View.VISIBLE);
+            }
+            
             if (artistNameText != null && artistName != null) {
                 artistNameText.setText("Artist: " + artistName);
                 artistNameText.setVisibility(View.VISIBLE);
@@ -480,11 +491,6 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 paintingPriceText.setText("Price: " + paintingPrice);
                 paintingPriceText.setVisibility(View.VISIBLE);
             }
-            
-            if (paintingDescription != null && paintingMedium != null) {
-                paintingDescription.setText(paintingMedium);
-                paintingDescription.setVisibility(View.VISIBLE);
-            }
 
             // Load the image
             if (paintingImageView != null) {
@@ -492,19 +498,14 @@ public class PaintingDetailActivity extends AppCompatActivity {
                     Glide.with(this)
                             .load(paintingImage)
                             .into(paintingImageView);
-                    Log.d(TAG, "Loading image from URL: " + paintingImage);
                 } else if (paintingResId != 0) {
                     paintingImageView.setImageResource(paintingResId);
-                    Log.d(TAG, "Loading image from resource ID: " + paintingResId);
                 }
             }
 
-            // Setup other UI elements
             setupHeartButton();
             setupAddToToteBagButton();
             setupImageClickListeners();
-        } else {
-            Log.e(TAG, "Intent is null");
         }
     }
 }

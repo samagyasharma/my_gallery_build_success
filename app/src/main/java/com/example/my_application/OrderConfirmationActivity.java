@@ -41,7 +41,7 @@ public class OrderConfirmationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_order_confirmation);
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        selectedPaintings = getIntent().getParcelableArrayListExtra("selectedPaintings");
+        selectedPaintings = getIntent().getParcelableArrayListExtra("selectedPaintings", Painting.class);
 
         // Initialize views
         selectedPaintingsGrid = findViewById(R.id.selectedPaintingsGrid);

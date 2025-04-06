@@ -56,10 +56,9 @@ public class FeaturedPaintingsActivity extends AppCompatActivity {
                                 String title = data[0].trim();
                                 String artist = data[1].trim();
                                 String price = data[2].trim();
-                                String medium = data[3].trim();
                                 String imageUrl = data[4].trim();
                                 
-                                paintings.add(new Painting(title, artist, price, medium, imageUrl));
+                                paintings.add(new Painting(title, artist, price, imageUrl));
                             }
                         }
                         

@@ -52,38 +52,47 @@ public class ToteBagAdapter extends RecyclerView.Adapter<ToteBagAdapter.ViewHold
         holder.paintingPriceText.setText("Rs " + painting.getPrice());
         holder.paintingCheckbox.setChecked(false);  // Default state
 
-        // Load painting image
+        // Load painting image based on type
         if (painting.getImageUrl() != null && !painting.getImageUrl().isEmpty()) {
+            // Load URL-based image
             Glide.with(holder.itemView.getContext())
                     .load(painting.getImageUrl())
+                    .placeholder(R.drawable.placeholder_image)
+                    .error(R.drawable.placeholder_image)
                     .into(holder.paintingPreview);
         } else if (painting.getImageResId() != 0) {
+            // Load resource-based image
             holder.paintingPreview.setImageResource(painting.getImageResId());
+        } else {
+            // Set a placeholder if no image is available
+            holder.paintingPreview.setImageResource(R.drawable.placeholder_image);
         }
 
         // Set click listener for the entire item
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), PaintingDetailActivity.class);
             intent.putExtra("paintingResId", painting.getImageResId());
-            intent.putExtra("paintingImage", painting.getImageUrl());
-            intent.putExtra("paintingName", painting.getTitle());
-            intent.putExtra("paintingDescription", painting.getMedium());  // Using medium instead of description
-            intent.putExtra("paintingPrice", "Rs " + painting.getPrice());
-            intent.putExtra("paintingArtist", painting.getArtist());
+            intent.putExtra("painting_image", painting.getImageUrl());
+            intent.putExtra("painting_name", painting.getTitle());
+            intent.putExtra("painting_medium", painting.getDescription() != null ? 
+                                             painting.getDescription() : "");
+            intent.putExtra("painting_price", "Rs " + painting.getPrice());
+            intent.putExtra("artist_name", painting.getArtist());
             holder.itemView.getContext().startActivity(intent);
         });
 
+        // Set up checkbox listener
         holder.paintingCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            painting.setSelected(isChecked);
             listener.onCheckboxChanged();
         });
 
-        // Use final position for remove button click
-        final int itemPosition = holder.getAdapterPosition();
-        holder.removeButton.setOnClickListener(v -> {
-            if (itemPosition != RecyclerView.NO_POSITION) {
-                listener.onPaintingRemoved(itemPosition);
-            }
-        });
+        // Set up remove button
+        if (holder.removeButton != null) {
+            holder.removeButton.setOnClickListener(v -> {
+                listener.onPaintingRemoved(position);
+            });
+        }
     }
 
     @Override

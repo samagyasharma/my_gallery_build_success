@@ -73,17 +73,9 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
         // Set up Buy Now button
         buyNowButton.setOnClickListener(v -> {
             ArrayList<Painting> selectedPaintings = new ArrayList<>();
-            int total = 0;
             for (Painting painting : paintings) {
-                // Get the checkbox state from the adapter instead
-                int position = paintings.indexOf(painting);
-                RecyclerView.ViewHolder viewHolder = 
-                    toteBagRecyclerView.findViewHolderForAdapterPosition(position);
-                if (viewHolder != null) {
-                    CheckBox checkbox = viewHolder.itemView.findViewById(R.id.paintingCheckbox);
-                    if (checkbox != null && checkbox.isChecked()) {
-                        selectedPaintings.add(painting);
-                    }
+                if (painting.isSelected()) {
+                    selectedPaintings.add(painting);
                 }
             }
             

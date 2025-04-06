@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">my_application</string>
+    <string name="heart_button">heart_description\n</string>
+</resources>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4C2C2">
+
+    <!-- Moving Background -->
+    <com.example.my_application.MovingBackgroundView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Contact Me Header -->
+    <TextView
+        android:id="@+id/contactMeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Contact Me !"
+        android:textSize="26sp"
+        android:textColor="#800080"
+        android:textStyle="bold"
+        android:fontFamily="@font/caveat"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="20dp" />
+
+    <!-- WhatsApp Message -->
+    <TextView
+        android:id="@+id/contactMeContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WhatsApp your concerns! 9667965550"
+        android:textSize="18sp"
+        android:textColor="#000"
+        android:fontFamily="@font/lora"
+        android:layout_below="@id/contactMeTitle"
+        android:paddingTop="10dp"
+        android:lineSpacingExtra="6dp"
+        android:layout_marginStart="20dp" />
+
+    <!-- Email Address (Clickable) -->
+    <TextView
+        android:id="@+id/emailText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email: samagyasharma05@gmail.com"
+        android:textSize="18sp"
+        android:textColor="#0000EE"
+        android:textStyle="bold"
+        android:fontFamily="@font/lora"
+        android:autoLink="email"
+        android:layout_below="@id/contactMeContent"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp" />
+
+    <!-- Website Description -->
+    <TextView
+        android:id="@+id/reportIssueText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="For any order related or other concerns, please report here!"
+        android:textSize="16sp"
+        android:textColor="#000"
+        android:fontFamily="@font/lora"
+        android:layout_below="@id/emailText"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="20dp" />
+
+    <!-- Hyperlink to Website -->
+    <TextView
+        android:id="@+id/websiteLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="Customer Concerns Website"
+        android:textSize="18sp"
+        android:textColor="#0000EE"
+        android:textStyle="bold"
+        android:fontFamily="@font/lora"
+        android:autoLink="web"
+        android:layout_below="@id/reportIssueText"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp" />
+
+</RelativeLayout>

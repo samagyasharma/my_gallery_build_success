@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4C2C2">
+
+    <!-- Moving Background -->
+    <com.example.my_application.MovingBackgroundView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+    <!-- About Me Header -->
+    <TextView
+        android:id="@+id/aboutMeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="About Me !"
+        android:textSize="26sp"
+        android:textColor="#800080"
+        android:textStyle="bold"
+        android:fontFamily="@font/caveat"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp" />
+
+    <!-- About Me Content -->
+    <TextView
+        android:id="@+id/aboutMeContent"
+        android:layout_width="match_parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_height="wrap_content"
+        android:text="Hi ! I am Samagya Sharma. I am a software engineer at Samsung, passionate about technology and creativity. In my free time, I love to paint using various mediums like watercolors, acrylics, and mixed media. Each piece I create tells a unique story, and I enjoy experimenting with different techniques to bring my visions to life."
+        android:textSize="18sp"
+        android:textColor="#000"
+        android:fontFamily="@font/lora"
+        android:layout_below="@id/aboutMeTitle"
+        android:layout_centerHorizontal="true"
+        android:padding="20dp"
+        android:lineSpacingExtra="6dp" />
+
+</RelativeLayout>

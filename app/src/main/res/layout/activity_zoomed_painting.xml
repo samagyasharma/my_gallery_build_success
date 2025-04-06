@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFD9E6"
+    tools:context=".ZoomedPaintingActivity">
+
+    <!-- Toolbar with title android:background="@android:color/transparent" -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:title="Have a Closer Look!"
+        android:textColor="#800080"
+        android:titleTextColor="@android:color/black" />
+
+    <!-- Zoomable Image -->
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/zoomableImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"/>
+</LinearLayout>

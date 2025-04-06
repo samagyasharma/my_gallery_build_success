@@ -1,0 +1,117 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#FFF5EB">
+
+    <!-- Featured Painting Image -->
+    <ImageView
+        android:id="@+id/paintingImageView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="Painting Image" />
+
+    <!-- Painting Details Section -->
+    <LinearLayout
+        android:id="@+id/detailsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/paintingImageView"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Painting Title -->
+        <TextView
+            android:id="@+id/paintingTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Painting Title"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/paintingDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This painting showcases..."
+            android:textSize="16sp"
+            android:lineSpacingExtra="4dp"
+            android:textColor="#333"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Heart Button -->
+        <ImageButton
+            android:id="@+id/heartButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="16dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_heart_white"
+            android:contentDescription="@string/heart_button" />
+
+        <!-- Add to Tote Bag Button -->
+        <Button
+            android:id="@+id/addToToteBagButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add to Tote Bag!"
+            android:backgroundTint="#F77A55"
+            android:textColor="#FFF"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
+
+    <!-- Comments Section (RecyclerView directly instead of NestedScrollView) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/commentsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/detailsContainer"
+        android:layout_above="@id/commentInputContainer"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:background="#FFEEDD" />
+
+    <!-- Comment Input Bar -->
+    <LinearLayout
+        android:id="@+id/commentInputContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="#FFF"
+        android:weightSum="10">
+
+        <EditText
+            android:id="@+id/commentEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:hint="Add a comment..."
+            android:padding="12dp"
+            android:background="@drawable/rounded_edittext_background"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:textSize="16sp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
+        <Button
+            android:id="@+id/commentSubmitButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Send"
+            android:backgroundTint="#F77A55"
+            android:textColor="#FFF"
+            android:padding="12dp"
+            android:layout_marginStart="8dp"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+</RelativeLayout>

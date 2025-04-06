@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity"
+        android:background="#F4C2C2">
+
+    <com.example.my_application.MovingBackgroundView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Featured Image -->
+        <ImageView
+            android:id="@+id/featuredImage"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:src="@drawable/my_header_image"
+            android:scaleType="centerCrop" />
+
+        <!-- Featured Paintings Carousel -->
+        <HorizontalScrollView
+            android:id="@+id/featuredCarousel"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_below="@id/featuredImage"
+            android:paddingHorizontal="4dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <!-- Painting Items -->
+                <ImageView
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:src="@drawable/carousel_painting1"
+                    android:scaleType="centerCrop"
+                    android:layout_marginHorizontal="4dp" />
+
+                <ImageView
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:src="@drawable/carousel_painting5"
+                    android:scaleType="centerCrop"
+                    android:layout_marginHorizontal="4dp" />
+
+                <ImageView
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:src="@drawable/carousel_painting3"
+                    android:scaleType="centerCrop"
+                    android:layout_marginHorizontal="4dp" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- Grid View for Paintings -->
+        <GridView
+            android:id="@+id/paintingsGridView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@id/featuredCarousel"
+            android:layout_marginTop="2dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:horizontalSpacing="0dp"
+            android:numColumns="1"
+            android:padding="8dp"
+            android:verticalSpacing="6dp" />
+
+        <!-- Bottom Navigation -->
+        <LinearLayout
+            android:id="@+id/bottomNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:background="#800080"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/toteBagButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tote bag"
+                android:background="@android:color/transparent"
+                android:textColor="#FFF"
+                android:fontFamily="@font/caveat" />
+
+            <Button
+                android:id="@+id/aboutMeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="About Me"
+                android:background="@android:color/transparent"
+                android:textColor="#FFF"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/caveat" />
+
+            <Button
+                android:id="@+id/contactButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:backgroundTint="#F77A55"
+                android:fontFamily="@font/caveat"
+                android:text="Contact"
+                android:textColor="#FFF" />
+        </LinearLayout>
+
+    </RelativeLayout>

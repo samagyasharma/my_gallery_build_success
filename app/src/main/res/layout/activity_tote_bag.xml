@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFD9E6">
+
+
+    <!-- Header Title -->
+    <TextView
+        android:id="@+id/toteBagTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tote Bag"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="#800080"
+        android:fontFamily="@font/caveat"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp" />
+
+    <!-- Tote Bag Item Container -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toteBagTitle"
+        android:layout_marginTop="16dp"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:id="@+id/toteBagContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <!-- Empty State Message -->
+            <TextView
+                android:id="@+id/noItemsMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Tote Bag is empty!"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                android:textColor="#000"
+                android:fontFamily="@font/lora"
+                android:layout_gravity="center"
+                android:padding="8dp"
+                android:visibility="visible" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Buy Now Button -->
+    <Button
+        android:id="@+id/buyNowButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Buy Now"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#FFF"
+        android:backgroundTint="#F77A55"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:padding="12dp"/>
+</RelativeLayout>

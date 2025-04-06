@@ -39,10 +39,29 @@ public class ToteBag {
         }
     }
 
-    public void removePainting(Painting painting) {
-        selectedPaintings.remove(painting);
-        Log.d(TAG, "Removing painting: " + painting.getTitle());
-        saveSelectedPaintings();
+    public boolean removePainting(Painting painting) {
+        if (painting == null) return false;
+        
+        // Find the painting to remove
+        Painting paintingToRemove = null;
+        for (Painting p : selectedPaintings) {
+            if (p.getTitle().equals(painting.getTitle()) && 
+                p.getArtist().equals(painting.getArtist())) {
+                paintingToRemove = p;
+                break;
+            }
+        }
+        
+        // Remove the painting if found
+        if (paintingToRemove != null) {
+            boolean removed = selectedPaintings.remove(paintingToRemove);
+            Log.d(TAG, "Removing painting: " + painting.getTitle() + " - Success: " + removed);
+            saveSelectedPaintings();
+            return true;
+        }
+        
+        Log.d(TAG, "Failed to remove painting: " + painting.getTitle() + " (not found in tote bag)");
+        return false;
     }
 
     public boolean isPaintingInBag(Painting painting) {

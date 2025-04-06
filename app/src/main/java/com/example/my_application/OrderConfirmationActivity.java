@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -91,38 +92,6 @@ public class OrderConfirmationActivity extends AppCompatActivity {
         setupButtons();
     }
 
-    private void removeSelectedPaintingsFromToteBag() {
-        toteBagItems = loadToteBagItems();
-
-        // Use an iterator to safely remove items
-        Iterator<Painting> iterator = toteBagItems.iterator();
-        while (iterator.hasNext()) {
-            Painting painting = iterator.next();
-            if (selectedPaintings.contains(painting)) {
-                iterator.remove();
-            }
-        }
-
-        // Save the updated tote bag list back to SharedPreferences
-        saveToteBagItems();
-    }
-
-    private void saveToteBagItems() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(toteBagItems);
-        editor.putString(KEY_TOTE_BAG, json);
-        editor.apply();
-    }
-
-    private ArrayList<Painting> loadToteBagItems() {
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString(KEY_TOTE_BAG, "");
-        Type type = new TypeToken<ArrayList<Painting>>() {}.getType();
-        ArrayList<Painting> items = gson.fromJson(json, type);
-        return items != null ? items : new ArrayList<>();
-    }
-
     private void displayOrderDetails() {
         double total = 0.0;
         StringBuilder details = new StringBuilder();
@@ -195,10 +164,17 @@ public class OrderConfirmationActivity extends AppCompatActivity {
                     Toast.makeText(this, "Order submitted successfully!", Toast.LENGTH_LONG).show();
                     
                     // Remove selected paintings from ToteBag
-                    removeSelectedPaintingsFromToteBag();
+                    ToteBag toteBag = ToteBag.getInstance(this);
+                    for (Painting painting : selectedPaintings) {
+                        // Log before removal attempt
+                        Log.d("OrderConfirmation", "Attempting to remove painting: " + painting.getTitle());
+                        boolean removed = toteBag.removePainting(painting);
+                        Log.d("OrderConfirmation", "Removal success: " + removed);
+                    }
 
-                    // Clear selected paintings after confirmation
-                    selectedPaintings.clear();
+                    // Log remaining paintings in tote bag
+                    List<Painting> remainingPaintings = toteBag.getSelectedPaintings();
+                    Log.d("OrderConfirmation", "Remaining paintings in tote bag: " + remainingPaintings.size());
 
                     // Navigate back to the main screen
                     Intent intent = new Intent(this, MainActivity.class);

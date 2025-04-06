@@ -73,7 +73,9 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
         // Set up Buy Now button
         buyNowButton.setOnClickListener(v -> {
             ArrayList<Painting> selectedPaintings = new ArrayList<>();
-            for (Painting painting : paintings) {
+            List<Painting> toteBagPaintings = ToteBag.getInstance(this).getSelectedPaintings();
+            
+            for (Painting painting : toteBagPaintings) {
                 if (painting.isSelected()) {
                     selectedPaintings.add(painting);
                 }

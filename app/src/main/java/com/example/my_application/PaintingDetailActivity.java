@@ -43,6 +43,11 @@ public class PaintingDetailActivity extends AppCompatActivity {
     private Painting currentPainting;
 
     private String paintingName;
+    private int paintingResId;
+    private String paintingImage;
+    private String paintingDesc;
+    private String artistName;
+    private String paintingPrice;
 
     ImageView paintingImageView;
     TextView paintingTitle, paintingDescription, artistNameText, paintingPriceText;
@@ -53,6 +58,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private String currentPaintingId;
+    private String currentUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,35 +83,37 @@ public class PaintingDetailActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         // Get painting details from intent
-        int paintingResId = getIntent().getIntExtra("paintingResId", 0);
-        String paintingImage = getIntent().getStringExtra("paintingImage");
         paintingName = getIntent().getStringExtra("paintingName");
-        String paintingDesc = getIntent().getStringExtra("paintingDescription");
-        String artistName = getIntent().getStringExtra("paintingArtist");
-        String paintingPrice = getIntent().getStringExtra("paintingPrice");
+        paintingResId = getIntent().getIntExtra("paintingResId", 0);
+        paintingImage = getIntent().getStringExtra("paintingImage");
+        paintingDesc = getIntent().getStringExtra("paintingDescription");
+        artistName = getIntent().getStringExtra("paintingArtist");
+        paintingPrice = getIntent().getStringExtra("paintingPrice");
+        currentPaintingId = getIntent().getStringExtra("paintingId");
         
-        // Parse price
-        int price = 0;
-        if (paintingPrice != null) {
-            try {
-                // Remove any non-numeric characters and parse
-                String numericPrice = paintingPrice.replaceAll("[^0-9]", "");
-                if (!numericPrice.isEmpty()) {
-                    price = Integer.parseInt(numericPrice);
-                }
-            } catch (NumberFormatException e) {
-                Log.e(TAG, "Error parsing price: " + paintingPrice, e);
-            }
-        }
+        // Get the current user's name from the comment dialog
+        currentUserName = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+                .getString("lastUsedName", null);
+
+        // Initialize views and setup
+        initializeViews();
+        setupPaintingDetails(paintingName, paintingDesc, artistName, paintingPrice);
+        setupCommentsRecyclerView();
+        setupCommentInput();
+    }
+
+    private void initializeViews() {
+        // Initialize Firestore references
+        commentsRef = db.collection("paintings")
+                .document(currentPaintingId)
+                .collection("comments");
 
         // Display painting details
         if (paintingImage != null && !paintingImage.isEmpty()) {
             Glide.with(this).load(paintingImage).into(paintingImageView);
-            // Set up aspect ratio after image is loaded
             paintingImageView.post(() -> adjustImageViewSize(paintingImageView));
         } else if (paintingResId != 0) {
             paintingImageView.setImageResource(paintingResId);
-            // Set up aspect ratio after image is loaded
             paintingImageView.post(() -> adjustImageViewSize(paintingImageView));
         }
         
@@ -121,67 +129,53 @@ public class PaintingDetailActivity extends AppCompatActivity {
             paintingImage != null ? paintingImage : "",
             paintingDesc,
             artistName,
-            price
+            parsePrice(paintingPrice)
         );
         
         // Update heart button initial state
         updateHeartButtonState(currentPainting);
 
-        // Handle heart button toggle
-        heartButton.setOnClickListener(v -> {
-            if (ToteBag.getInstance(this).isPaintingInBag(currentPainting)) {
-                ToteBag.getInstance(this).removePainting(currentPainting);
-                Toast.makeText(this, "Removed from Tote Bag", Toast.LENGTH_SHORT).show();
-            } else {
-                ToteBag.getInstance(this).addPainting(currentPainting);
-                Toast.makeText(this, "Added to Tote Bag", Toast.LENGTH_SHORT).show();
+        // Set up click listeners and other functionality
+        setupHeartButton();
+        setupAddToToteBagButton();
+        setupImageClickListeners();
+    }
+
+    private int parsePrice(String paintingPrice) {
+        if (paintingPrice != null) {
+            try {
+                String numericPrice = paintingPrice.replaceAll("[^0-9]", "");
+                if (!numericPrice.isEmpty()) {
+                    return Integer.parseInt(numericPrice);
+                }
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "Error parsing price: " + paintingPrice, e);
             }
-            updateHeartButtonState(currentPainting);
-        });
-
-        // Handle Add to Tote Bag button
-        addToToteBagButton.setOnClickListener(v -> {
-            ToteBag toteBag = ToteBag.getInstance(this);
-            if (!toteBag.isPaintingInBag(currentPainting)) {
-                toteBag.addPainting(currentPainting);
-                Toast.makeText(this, "Added to Tote Bag", Toast.LENGTH_SHORT).show();
-                updateHeartButtonState(currentPainting);
-            } else {
-                Toast.makeText(this, "Already in Tote Bag", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Handle painting image click to open zoomed view
-        paintingImageView.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ZoomedPaintingActivity.class);
-            intent.putExtra("paintingResId", paintingResId);
-            intent.putExtra("paintingImage", paintingImage);
-            startActivity(intent);
-        });
-
-        // Handle zoom icon click
-        zoomIcon.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ZoomedPaintingActivity.class);
-            intent.putExtra("paintingResId", paintingResId);
-            intent.putExtra("paintingImage", paintingImage);
-            startActivity(intent);
-        });
-
-        // Get painting ID from intent
-        currentPaintingId = getIntent().getStringExtra("paintingId");
-        if (currentPaintingId == null) {
-            finish();
-            return;
         }
+        return 0;
+    }
 
-        // Initialize Firestore
-        commentsRef = db.collection("paintings").document(currentPaintingId).collection("comments");
+    private void setupCommentsRecyclerView() {
+        Log.d(TAG, "Setting up comments recycler view for painting: " + currentPaintingId);
+        
+        // Set up the layout manager
+        commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        
+        // Query comments for this painting
+        Query query = db.collection("paintings")
+                .document(currentPaintingId)
+                .collection("comments")
+                .orderBy("timestamp", Query.Direction.DESCENDING);
 
-        // Set up RecyclerView
-        setupCommentsRecyclerView();
+        Log.d(TAG, "Firestore query path: paintings/" + currentPaintingId + "/comments");
 
-        // Handle comment submission
-        setupCommentInput();
+        FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
+                .setQuery(query, Comment.class)
+                .build();
+
+        commentsAdapter = new CommentsAdapter(options, this, currentUserName);
+        commentsRecyclerView.setAdapter(commentsAdapter);
+        commentsAdapter.startListening();
     }
 
     /**
@@ -232,53 +226,77 @@ public class PaintingDetailActivity extends AppCompatActivity {
         imageView.setLayoutParams(params);
     }
 
-    private void setupCommentsRecyclerView() {
-        commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Query comments for this painting
-        Query query = db.collection("comments")
-                .whereEqualTo("paintingId", currentPaintingId)
-                .orderBy("timestamp", Query.Direction.DESCENDING);
-
-        FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
-                .setQuery(query, Comment.class)
-                .build();
-
-        commentsAdapter = new CommentsAdapter(options, this);
-        commentsRecyclerView.setAdapter(commentsAdapter);
-    }
-
     private void setupCommentInput() {
         commentSubmitButton.setOnClickListener(v -> {
             String commentText = commentEditText.getText().toString().trim();
-            if (!commentText.isEmpty() && mAuth.getCurrentUser() != null) {
-                String userId = mAuth.getCurrentUser().getUid();
-                String userName = mAuth.getCurrentUser().getDisplayName();
-                if (userName == null || userName.isEmpty()) {
-                    userName = "Anonymous";
-                }
-
-                String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                        .format(new Date());
-
-                Comment comment = new Comment(
-                        commentText,
-                        userId,
-                        userName,
-                        timestamp,
-                        currentPaintingId
-                );
-
-                db.collection("comments")
-                        .add(comment)
-                        .addOnSuccessListener(documentReference -> {
-                            commentEditText.setText("");
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(this, "Failed to post comment", Toast.LENGTH_SHORT).show();
-                        });
+            if (!commentText.isEmpty()) {
+                // Show dialog to get user's name
+                showNameInputDialog(commentText);
+            } else {
+                Toast.makeText(this, "Please enter a comment", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showNameInputDialog(String commentText) {
+        // Create dialog
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_name_input);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
+        // Initialize views
+        EditText nameInput = dialog.findViewById(R.id.nameInput);
+        Button submitButton = dialog.findViewById(R.id.submitButton);
+        Button cancelButton = dialog.findViewById(R.id.cancelButton);
+
+        // Handle submit button click
+        submitButton.setOnClickListener(v -> {
+            String userName = nameInput.getText().toString().trim();
+            if (!userName.isEmpty()) {
+                submitComment(commentText, userName);
+                dialog.dismiss();
+            } else {
+                Toast.makeText(this, "Please enter your name", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Handle cancel button click
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        // Show dialog
+        dialog.show();
+    }
+
+    private void submitComment(String commentText, String userName) {
+        // Save the user's name for future use
+        getSharedPreferences("UserPrefs", MODE_PRIVATE)
+                .edit()
+                .putString("lastUsedName", userName)
+                .apply();
+        
+        // Update current user name
+        currentUserName = userName;
+        
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                .format(new Date());
+
+        Comment comment = new Comment(
+                commentText,
+                "anonymous", // Since we don't have user authentication, using "anonymous" as userId
+                userName,
+                timestamp,
+                currentPaintingId
+        );
+
+        commentsRef.add(comment)
+                .addOnSuccessListener(documentReference -> {
+                    commentEditText.setText("");
+                    Toast.makeText(this, "Comment posted successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to post comment", Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override
@@ -302,6 +320,67 @@ public class PaintingDetailActivity extends AppCompatActivity {
             heartButton.setImageResource(R.drawable.ic_heart_red);
         } else {
             heartButton.setImageResource(R.drawable.ic_heart_white);
+        }
+    }
+
+    private void setupHeartButton() {
+        heartButton.setOnClickListener(v -> {
+            if (ToteBag.getInstance(this).isPaintingInBag(currentPainting)) {
+                ToteBag.getInstance(this).removePainting(currentPainting);
+                Toast.makeText(this, "Removed from Tote Bag", Toast.LENGTH_SHORT).show();
+            } else {
+                ToteBag.getInstance(this).addPainting(currentPainting);
+                Toast.makeText(this, "Added to Tote Bag", Toast.LENGTH_SHORT).show();
+            }
+            updateHeartButtonState(currentPainting);
+        });
+    }
+
+    private void setupAddToToteBagButton() {
+        addToToteBagButton.setOnClickListener(v -> {
+            ToteBag toteBag = ToteBag.getInstance(this);
+            if (!toteBag.isPaintingInBag(currentPainting)) {
+                toteBag.addPainting(currentPainting);
+                Toast.makeText(this, "Added to Tote Bag", Toast.LENGTH_SHORT).show();
+                updateHeartButtonState(currentPainting);
+            } else {
+                Toast.makeText(this, "Already in Tote Bag", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setupImageClickListeners() {
+        paintingImageView.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ZoomedPaintingActivity.class);
+            intent.putExtra("paintingResId", paintingResId);
+            intent.putExtra("paintingImage", paintingImage);
+            startActivity(intent);
+        });
+
+        zoomIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ZoomedPaintingActivity.class);
+            intent.putExtra("paintingResId", paintingResId);
+            intent.putExtra("paintingImage", paintingImage);
+            startActivity(intent);
+        });
+    }
+
+    private void setupPaintingDetails(String name, String description, String artist, String price) {
+        // Set painting title
+        paintingTitle.setText(name);
+        
+        // Set painting description
+        paintingDescription.setText(description);
+        
+        // Set artist name
+        artistNameText.setText("Artist: " + artist);
+        
+        // Set painting price
+        paintingPriceText.setText("Price: " + price);
+        
+        // Set painting image from resource ID
+        if (paintingResId != 0) {
+            paintingImageView.setImageResource(paintingResId);
         }
     }
 }

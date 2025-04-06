@@ -1,39 +1,38 @@
 package com.example.my_application;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class CommentsAdapter extends FirestoreRecyclerAdapter<Comment, CommentsAdapter.CommentViewHolder> {
 
     private Context context;
-    private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private String currentUserName;
 
-    // Constructor
-    public CommentsAdapter(@NonNull FirestoreRecyclerOptions<Comment> options, Context context) {
+    public CommentsAdapter(@NonNull FirestoreRecyclerOptions<Comment> options, Context context, String currentUserName) {
         super(options);
         this.context = context;
-        this.mAuth = FirebaseAuth.getInstance();
         this.db = FirebaseFirestore.getInstance();
+        this.currentUserName = currentUserName;
     }
 
     @NonNull
     @Override
     public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the item layout
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_comment, parent, false);
         return new CommentViewHolder(itemView);
@@ -41,32 +40,38 @@ public class CommentsAdapter extends FirestoreRecyclerAdapter<Comment, CommentsA
 
     @Override
     protected void onBindViewHolder(@NonNull CommentViewHolder holder, int position, @NonNull Comment comment) {
+        Log.d("CommentsAdapter", "Binding comment at position " + position + 
+                ": text=" + comment.getText() + 
+                ", user=" + comment.getUserName() + 
+                ", timestamp=" + comment.getTimestamp());
+
         holder.commentText.setText(comment.getText());
         holder.userName.setText(comment.getUserName());
         holder.timestamp.setText(comment.getTimestamp());
 
-        // Show delete button only for the comment owner or admin
-        String currentUserId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
-        if (currentUserId != null && (currentUserId.equals(comment.getUserId()) || isAdmin(currentUserId))) {
+        // Show delete button only if the current user is the comment owner
+        if (currentUserName != null && currentUserName.equals(comment.getUserName())) {
             holder.deleteButton.setVisibility(View.VISIBLE);
             holder.deleteButton.setOnClickListener(v -> {
                 DocumentSnapshot snapshot = getSnapshots().getSnapshot(position);
-                db.collection("comments").document(snapshot.getId()).delete();
+                db.collection("paintings")
+                        .document(comment.getPaintingId())
+                        .collection("comments")
+                        .document(snapshot.getId())
+                        .delete()
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(context, "Comment deleted", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(context, "Failed to delete comment", Toast.LENGTH_SHORT).show();
+                        });
             });
         } else {
             holder.deleteButton.setVisibility(View.GONE);
         }
     }
 
-    private boolean isAdmin(String userId) {
-        // Implement admin check logic here
-        // This could be a Firestore query or a local check
-        return false; // Default to false, implement your admin check logic
-    }
-
-    // ViewHolder class to represent each comment item
     static class CommentViewHolder extends RecyclerView.ViewHolder {
-
         TextView commentText;
         TextView userName;
         TextView timestamp;
@@ -74,7 +79,6 @@ public class CommentsAdapter extends FirestoreRecyclerAdapter<Comment, CommentsA
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Initialize the views
             commentText = itemView.findViewById(R.id.commentText);
             userName = itemView.findViewById(R.id.userName);
             timestamp = itemView.findViewById(R.id.timestamp);

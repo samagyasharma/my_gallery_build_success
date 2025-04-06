@@ -292,23 +292,24 @@ public class PaintingDetailActivity extends AppCompatActivity {
     }
 
     private void updateHeartButtonState(Painting painting) {
-        if (ToteBag.getInstance(this).isPaintingInBag(painting)) {
-            heartButton.setImageResource(R.drawable.ic_heart_red);
-             } else {
-            heartButton.setImageResource(R.drawable.ic_heart_white);
+        if (heartButton != null) {
+            boolean isInToteBag = ToteBag.getInstance(this).isPaintingInBag(painting);
+            heartButton.setImageResource(isInToteBag ? R.drawable.ic_heart_red : R.drawable.ic_heart_white);
         }
     }
 
     private void setupHeartButton() {
         heartButton.setOnClickListener(v -> {
-            if (ToteBag.getInstance(this).isPaintingInBag(currentPainting)) {
-                ToteBag.getInstance(this).removePainting(currentPainting);
+            ToteBag toteBag = ToteBag.getInstance(this);
+            if (toteBag.isPaintingInBag(currentPainting)) {
+                toteBag.removePainting(currentPainting);
                 Toast.makeText(this, "Removed from Tote Bag", Toast.LENGTH_SHORT).show();
+                heartButton.setImageResource(R.drawable.ic_heart_white);
             } else {
-                ToteBag.getInstance(this).addPainting(currentPainting);
+                toteBag.addPainting(currentPainting);
                 Toast.makeText(this, "Added to Tote Bag", Toast.LENGTH_SHORT).show();
+                heartButton.setImageResource(R.drawable.ic_heart_red);
             }
-            updateHeartButtonState(currentPainting);
         });
     }
 
@@ -452,7 +453,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
             paintingImage = intent.getStringExtra("painting_image");
             String artistName = intent.getStringExtra("artist_name");
             String paintingPrice = intent.getStringExtra("painting_price");
-            String description = intent.getStringExtra("painting_description");  // Get description
+            String description = intent.getStringExtra("painting_description");
 
             // Set the views with null checks
             if (paintingTitle != null && paintingName != null) {
@@ -470,12 +471,11 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 paintingPriceText.setVisibility(View.VISIBLE);
             }
             
-            // Set description with null check
             if (description != null && !description.isEmpty() && paintingDescription != null) {
                 paintingDescription.setText(description);
                 paintingDescription.setVisibility(View.VISIBLE);
             } else {
-                paintingDescription.setVisibility(View.GONE);  // Hide if no description
+                paintingDescription.setVisibility(View.GONE);
             }
 
             // Load the image
@@ -511,6 +511,9 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 currentPainting.setDescription(description);
             }
 
+            // Update heart button state before setting up click listeners
+            updateHeartButtonState(currentPainting);
+            
             setupHeartButton();
             setupAddToToteBagButton();
             setupImageClickListeners();

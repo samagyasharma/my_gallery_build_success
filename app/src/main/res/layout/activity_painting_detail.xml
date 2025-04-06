@@ -11,7 +11,6 @@
         android:id="@+id/paintingImageContainer"
         android:layout_width="0dp"
         android:layout_height="300dp"
-        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,11 +41,54 @@
 
     </FrameLayout>
 
+    <!-- Title Container (Fixed) -->
+    <LinearLayout
+        android:id="@+id/titleContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/paintingImageContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/paintingTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#800080"
+            android:fontFamily="@font/caveat" />
+
+        <ImageButton
+            android:id="@+id/shareButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/rounded_button"
+            android:src="@drawable/ic_share"
+            android:contentDescription="Share painting"
+            android:padding="12dp"
+            android:layout_marginEnd="8dp" />
+
+        <ImageButton
+            android:id="@+id/heartButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/rounded_button"
+            android:src="@drawable/ic_heart_white"
+            android:contentDescription="@string/heart_button"
+            android:padding="12dp" />
+
+    </LinearLayout>
+
     <!-- ScrollView for painting details -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/paintingImageContainer"
+        app:layout_constraintTop_toBottomOf="@id/titleContainer"
         app:layout_constraintBottom_toTopOf="@id/commentInputContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -56,46 +98,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <!-- Painting Title and Heart Button -->
-            <LinearLayout
-                android:id="@+id/titleContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="16dp">
-
-                <TextView
-                    android:id="@+id/paintingTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="#800080"
-                    android:fontFamily="@font/caveat" />
-
-                <ImageButton
-                    android:id="@+id/shareButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/rounded_button"
-                    android:src="@drawable/ic_share"
-                    android:contentDescription="Share painting"
-                    android:padding="12dp"
-                    android:layout_marginEnd="8dp" />
-
-                <ImageButton
-                    android:id="@+id/heartButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/rounded_button"
-                    android:src="@drawable/ic_heart_white"
-                    android:contentDescription="@string/heart_button"
-                    android:padding="12dp" />
-
-            </LinearLayout>
 
             <!-- Painting Description -->
             <TextView

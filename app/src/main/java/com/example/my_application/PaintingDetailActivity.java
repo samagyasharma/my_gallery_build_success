@@ -183,8 +183,8 @@ public class PaintingDetailActivity extends AppCompatActivity {
         Log.d(TAG, "Firestore query path: paintings/" + currentPaintingId + "/comments");
 
         FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
-                .setQuery(query, Comment.class)
-                .build();
+                        .setQuery(query, Comment.class)
+                        .build();
 
         commentsAdapter = new CommentsAdapter(options, this, currentUserName);
         commentsRecyclerView.setAdapter(commentsAdapter);
@@ -331,7 +331,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
     private void updateHeartButtonState(Painting painting) {
         if (ToteBag.getInstance(this).isPaintingInBag(painting)) {
             heartButton.setImageResource(R.drawable.ic_heart_red);
-        } else {
+             } else {
             heartButton.setImageResource(R.drawable.ic_heart_white);
         }
     }

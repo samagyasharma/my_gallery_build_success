@@ -63,6 +63,11 @@
         <activity
             android:name=".ToteBagActivity"
             android:exported="true" />
+
+        <!-- Featured Paintings Activity -->
+        <activity
+            android:name=".FeaturedPaintingsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

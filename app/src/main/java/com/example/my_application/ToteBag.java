@@ -11,15 +11,15 @@ import java.util.List;
 
 public class ToteBag {
     private static final String TAG = "ToteBag";
+    private static final String PREF_NAME = "ToteBagPrefs";
+    private static final String KEY_SELECTED_PAINTINGS = "selectedPaintings";
     private static ToteBag instance;
-    private List<Painting> paintings;
-    private SharedPreferences sharedPreferences;
-    private static final String PREFS_NAME = "ToteBagPrefs";
-    private static final String KEY_TOTE_BAG = "ToteBagItems";
+    private final SharedPreferences preferences;
+    private final List<Painting> selectedPaintings;
 
     private ToteBag(Context context) {
-        sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        paintings = loadPaintings();
+        preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        selectedPaintings = loadSelectedPaintings();
     }
 
     public static synchronized ToteBag getInstance(Context context) {
@@ -29,47 +29,87 @@ public class ToteBag {
         return instance;
     }
 
-    public List<Painting> getPaintings() {
-        return paintings;
-    }
-
     public void addPainting(Painting painting) {
-        if (!paintings.contains(painting)) {
-            paintings.add(painting);
-            Log.d(TAG, "Adding painting: " + painting.getName() + ", Artist: " + painting.getArtist());
-            savePaintings();
+        if (!selectedPaintings.contains(painting)) {
+            selectedPaintings.add(painting);
+            Log.d(TAG, "Adding painting: " + painting.getTitle() + ", Artist: " + painting.getArtist() + 
+                      (painting.isUrlBased() ? ", URL: " + painting.getImageUrl() : 
+                      ", ResId: " + painting.getImageResId()));
+            saveSelectedPaintings();
         }
     }
 
     public void removePainting(Painting painting) {
-        paintings.remove(painting);
-        savePaintings();
+        selectedPaintings.remove(painting);
+        Log.d(TAG, "Removing painting: " + painting.getTitle());
+        saveSelectedPaintings();
     }
 
     public boolean isPaintingInBag(Painting painting) {
-        return paintings.contains(painting);
-    }
-
-    private void savePaintings() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(paintings);
-        Log.d(TAG, "Saving paintings to SharedPreferences: " + json);
-        editor.putString(KEY_TOTE_BAG, json);
-        editor.apply();
-    }
-
-    private List<Painting> loadPaintings() {
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString(KEY_TOTE_BAG, "");
-        Type type = new TypeToken<ArrayList<Painting>>() {}.getType();
-        List<Painting> loadedPaintings = gson.fromJson(json, type);
-        if (loadedPaintings != null) {
-            Log.d(TAG, "Loaded paintings from SharedPreferences: " + loadedPaintings.size() + " items");
-            for (Painting p : loadedPaintings) {
-                Log.d(TAG, "Loaded painting: " + p.getName() + ", Artist: " + p.getArtist());
+        if (painting == null) return false;
+        
+        for (Painting p : selectedPaintings) {
+            if (p.isUrlBased() && painting.isUrlBased()) {
+                // Compare URL-based paintings
+                if (p.getTitle().equals(painting.getTitle()) && 
+                    p.getImageUrl().equals(painting.getImageUrl())) {
+                    return true;
+                }
+            } else if (!p.isUrlBased() && !painting.isUrlBased()) {
+                // Compare resource-based paintings
+                if (p.getTitle().equals(painting.getTitle()) && 
+                    p.getImageResId() == painting.getImageResId()) {
+                    return true;
+                }
             }
         }
-        return loadedPaintings != null ? loadedPaintings : new ArrayList<>();
+        return false;
+    }
+
+    public List<Painting> getSelectedPaintings() {
+        return new ArrayList<>(selectedPaintings);
+    }
+
+    public void clearSelectedPaintings() {
+        selectedPaintings.clear();
+        saveSelectedPaintings();
+        Log.d(TAG, "Cleared all paintings from tote bag");
+    }
+
+    private void saveSelectedPaintings() {
+        String json = new Gson().toJson(selectedPaintings);
+        preferences.edit().putString(KEY_SELECTED_PAINTINGS, json).apply();
+        Log.d(TAG, "Saved " + selectedPaintings.size() + " paintings to SharedPreferences");
+    }
+
+    private List<Painting> loadSelectedPaintings() {
+        String json = preferences.getString(KEY_SELECTED_PAINTINGS, "");
+        if (json.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Type type = new TypeToken<ArrayList<Painting>>(){}.getType();
+        List<Painting> paintings = new Gson().fromJson(json, type);
+        if (paintings != null) {
+            Log.d(TAG, "Loaded paintings from SharedPreferences: " + paintings.size() + " items");
+            for (Painting p : paintings) {
+                Log.d(TAG, "Loaded painting: " + p.getTitle() + ", Artist: " + p.getArtist() + 
+                          (p.isUrlBased() ? ", URL: " + p.getImageUrl() : 
+                          ", ResId: " + p.getImageResId()));
+            }
+        }
+        return paintings != null ? paintings : new ArrayList<>();
+    }
+
+    public int getTotalPrice() {
+        int total = 0;
+        for (Painting painting : selectedPaintings) {
+            String priceStr = painting.getPrice().replaceAll("[^0-9]", "");
+            try {
+                total += Integer.parseInt(priceStr);
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "Error parsing price for painting: " + painting.getTitle(), e);
+            }
+        }
+        return total;
     }
 }

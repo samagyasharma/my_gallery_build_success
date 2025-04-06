@@ -1,5 +1,6 @@
 package com.example.my_application;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,50 +15,55 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class SelectedPaintingsAdapter extends RecyclerView.Adapter<SelectedPaintingsAdapter.ViewHolder> {
-    private List<Painting> selectedPaintings;
+    private List<Painting> paintings;
+    private Context context;
 
-    public SelectedPaintingsAdapter(List<Painting> selectedPaintings) {
-        this.selectedPaintings = selectedPaintings;
+    public SelectedPaintingsAdapter(Context context, List<Painting> paintings) {
+        this.context = context;
+        this.paintings = paintings;
     }
 
-    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_selected_painting, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Painting painting = selectedPaintings.get(position);
-        holder.paintingName.setText(painting.getName());
-        holder.paintingPrice.setText("Rs " + painting.getPrice());
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Painting painting = paintings.get(position);
+        holder.titleTextView.setText(painting.getTitle());
+        holder.priceTextView.setText(painting.getPrice());
 
-        if (painting.getImageUrl() != null && !painting.getImageUrl().isEmpty()) {
-            Glide.with(holder.itemView.getContext())
-                    .load(painting.getImageUrl())
-                    .into(holder.paintingPreview);
-        } else if (painting.getImageResId() != 0) {
-            holder.paintingPreview.setImageResource(painting.getImageResId());
+        // Load image based on type (URL or resource)
+        if (painting.isUrlBased()) {
+            // Load URL-based image using Glide
+            Glide.with(context)
+                .load(painting.getImageUrl())
+                .placeholder(R.drawable.placeholder_image)
+                .into(holder.paintingImageView);
+        } else {
+            // Load resource-based image directly
+            holder.paintingImageView.setImageResource(painting.getImageResId());
         }
     }
 
     @Override
     public int getItemCount() {
-        return selectedPaintings.size();
+        return paintings.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView paintingPreview;
-        TextView paintingName;
-        TextView paintingPrice;
+        public ImageView paintingImageView;
+        public TextView titleTextView;
+        public TextView priceTextView;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            paintingPreview = itemView.findViewById(R.id.paintingPreview);
-            paintingName = itemView.findViewById(R.id.paintingName);
-            paintingPrice = itemView.findViewById(R.id.paintingPrice);
+        public ViewHolder(View view) {
+            super(view);
+            paintingImageView = view.findViewById(R.id.paintingPreview);
+            titleTextView = view.findViewById(R.id.paintingName);
+            priceTextView = view.findViewById(R.id.paintingPrice);
         }
     }
 } 

@@ -98,6 +98,9 @@ dependencies {
     implementation("com.twilio.sdk:twilio:9.1.1")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
+    //implementation("com.github.bumptech.glide:glide:4.12.0")
+
+
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

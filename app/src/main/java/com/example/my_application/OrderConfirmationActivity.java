@@ -19,6 +19,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class OrderConfirmationActivity extends AppCompatActivity {
     private ArrayList<Painting> selectedPaintings;
@@ -30,6 +31,9 @@ public class OrderConfirmationActivity extends AppCompatActivity {
     private RecyclerView selectedPaintingsGrid;
     private SelectedPaintingsAdapter selectedPaintingsAdapter;
     private TextView totalPriceText;
+    private TextView orderDetailsTextView;
+    private Button confirmOrderButton;
+    private Button cancelOrderButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +46,12 @@ public class OrderConfirmationActivity extends AppCompatActivity {
         // Initialize views
         selectedPaintingsGrid = findViewById(R.id.selectedPaintingsGrid);
         totalPriceText = findViewById(R.id.totalPriceText);
-        Button confirmButton = findViewById(R.id.confirmButton);
+        confirmOrderButton = findViewById(R.id.confirmOrderButton);
+        cancelOrderButton = findViewById(R.id.cancelOrderButton);
         nameInput = findViewById(R.id.fullName);
         emailInput = findViewById(R.id.email);
         addressInput = findViewById(R.id.address);
+        orderDetailsTextView = findViewById(R.id.orderDetailsTextView);
 
         if (selectedPaintings == null || selectedPaintings.isEmpty()) {
             Toast.makeText(this, "No paintings selected!", Toast.LENGTH_SHORT).show();
@@ -59,55 +65,14 @@ public class OrderConfirmationActivity extends AppCompatActivity {
         selectedPaintingsGrid.setLayoutManager(layoutManager);
 
         // Set up the adapter
-        selectedPaintingsAdapter = new SelectedPaintingsAdapter(selectedPaintings);
+        selectedPaintingsAdapter = new SelectedPaintingsAdapter(this, selectedPaintings);
         selectedPaintingsGrid.setAdapter(selectedPaintingsAdapter);
 
         // Calculate and display total price
-        int total = 0;
-        for (Painting painting : selectedPaintings) {
-            total += painting.getPrice();
-        }
-        totalPriceText.setText("Total: Rs " + total);
+        displayOrderDetails();
 
-        confirmButton.setOnClickListener(v -> {
-            String userName = nameInput.getText().toString();
-            String userPhone = emailInput.getText().toString();
-            String deliveryAddress = addressInput.getText().toString();
-
-            if (userName.isEmpty() || userPhone.isEmpty() || deliveryAddress.isEmpty()) {
-                Toast.makeText(this, "Please fill in all details", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // Collect selected paintings from the list
-            StringBuilder paintingsList = new StringBuilder();
-            for (Painting painting : selectedPaintings) {
-                paintingsList.append(painting.getName()).append(", ");
-            }
-
-            // Remove last comma if list is not empty
-            if (paintingsList.length() > 0) {
-                paintingsList.setLength(paintingsList.length() - 2);
-            }
-
-            // Send SMS with full details
-            SendSMSAPI.sendSMS("+919667965550", userName, userPhone, deliveryAddress, paintingsList.toString());
-
-            // Remove selected paintings from ToteBag
-            removeSelectedPaintingsFromToteBag();
-
-            // Clear selected paintings after confirmation
-            selectedPaintings.clear();
-
-            // Show confirmation message
-            Toast.makeText(this, "Order Confirmed!", Toast.LENGTH_LONG).show();
-
-            // Navigate back to the main screen
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        });
+        // Set up button listeners
+        setupButtons();
     }
 
     private void removeSelectedPaintingsFromToteBag() {
@@ -140,5 +105,75 @@ public class OrderConfirmationActivity extends AppCompatActivity {
         Type type = new TypeToken<ArrayList<Painting>>() {}.getType();
         ArrayList<Painting> items = gson.fromJson(json, type);
         return items != null ? items : new ArrayList<>();
+    }
+
+    private void displayOrderDetails() {
+        double total = 0.0;
+        StringBuilder details = new StringBuilder();
+        details.append("Order Details:\n\n");
+
+        for (Painting painting : selectedPaintings) {
+            details.append("- ").append(painting.getTitle())
+                   .append(" by ").append(painting.getArtist())
+                   .append(": ").append(painting.getPrice()).append("\n");
+
+            // Parse price string to get numeric value
+            String priceStr = painting.getPrice().replaceAll("[^0-9.]", "");
+            try {
+                total += Double.parseDouble(priceStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        details.append("\nTotal: $").append(String.format("%.2f", total));
+        orderDetailsTextView.setText(details.toString());
+    }
+
+    private void setupButtons() {
+        confirmOrderButton.setOnClickListener(v -> {
+            String userName = nameInput.getText().toString();
+            String userPhone = emailInput.getText().toString();
+            String deliveryAddress = addressInput.getText().toString();
+
+            if (userName.isEmpty() || userPhone.isEmpty() || deliveryAddress.isEmpty()) {
+                Toast.makeText(this, "Please fill in all details", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Collect selected paintings from the list
+            StringBuilder paintingsList = new StringBuilder();
+            for (Painting painting : selectedPaintings) {
+                paintingsList.append(painting.getTitle()).append(", ");
+            }
+
+            // Remove last comma if list is not empty
+            if (paintingsList.length() > 0) {
+                paintingsList.setLength(paintingsList.length() - 2);
+            }
+
+            // Send SMS with full details
+            SendSMSAPI.sendSMS("+919667965550", userName, userPhone, deliveryAddress, paintingsList.toString());
+
+            // Remove selected paintings from ToteBag
+            removeSelectedPaintingsFromToteBag();
+
+            // Clear selected paintings after confirmation
+            selectedPaintings.clear();
+
+            // Show confirmation message
+            Toast.makeText(this, "Order Confirmed!", Toast.LENGTH_LONG).show();
+
+            // Navigate back to the main screen
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
+
+        cancelOrderButton.setOnClickListener(v -> {
+            // Simply close the activity
+            finish();
+        });
     }
 }

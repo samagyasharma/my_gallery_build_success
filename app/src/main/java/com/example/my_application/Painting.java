@@ -4,34 +4,63 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Painting implements Parcelable {
-    private final String name;
-    private final int imageResId; // For local images
-    private final String imageUrl; // For online images
-    private final String description;
-    private final String artist; // Add artist field
-    private int price;
-    private boolean isSelected;
+    private String title;
+    private String artist;
+    private String price;
+    private String medium;
+    private String imageUrl;
+    private int imageResId;
+    private boolean isUrlBased;
 
-    public Painting(String name, int imageResId, String imageUrl, String description, String artist, int price) {
-        this.name = name;
-        this.imageResId = imageResId;
-        this.imageUrl = imageUrl;
-        this.description = description;
+    // Constructor for URL-based paintings
+    public Painting(String title, String artist, String price, String medium, String imageUrl) {
+        this.title = title;
         this.artist = artist;
         this.price = price;
+        this.medium = medium;
+        this.imageUrl = imageUrl;
+        this.imageResId = 0;
+        this.isUrlBased = true;
+    }
+
+    // Constructor for resource-based paintings
+    public Painting(String title, String artist, String price, String medium, int imageResId) {
+        this.title = title;
+        this.artist = artist;
+        this.price = price;
+        this.medium = medium;
+        this.imageUrl = "";
+        this.imageResId = imageResId;
+        this.isUrlBased = false;
     }
 
     protected Painting(Parcel in) {
-        name = in.readString();
-        imageResId = in.readInt();
-        imageUrl = in.readString();
-        description = in.readString();
+        title = in.readString();
         artist = in.readString();
-        price = in.readInt();
-        isSelected = in.readByte() != 0;
+        price = in.readString();
+        medium = in.readString();
+        imageUrl = in.readString();
+        imageResId = in.readInt();
+        isUrlBased = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<Painting> CREATOR = new Parcelable.Creator<Painting>() {
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(artist);
+        dest.writeString(price);
+        dest.writeString(medium);
+        dest.writeString(imageUrl);
+        dest.writeInt(imageResId);
+        dest.writeByte((byte) (isUrlBased ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Painting> CREATOR = new Creator<Painting>() {
         @Override
         public Painting createFromParcel(Parcel in) {
             return new Painting(in);
@@ -43,77 +72,50 @@ public class Painting implements Parcelable {
         }
     };
 
-    public String getName() {
-        return name;
-    }
-
-    public int getImageResId() {
-        return imageResId;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public String getDescription() {
-        return description;
+    public String getTitle() {
+        return title;
     }
 
     public String getArtist() {
         return artist;
     }
 
-    public int getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public boolean isSelected() {
-        return isSelected;
+    public String getMedium() {
+        return medium;
     }
 
-    public void setSelected(boolean selected) {
-        isSelected = selected;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public int getImageResId() {
+        return imageResId;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(name);
-        parcel.writeInt(imageResId);
-        parcel.writeString(imageUrl);
-        parcel.writeString(description);
-        parcel.writeString(artist);
-        parcel.writeInt(price);
-        parcel.writeByte((byte) (isSelected ? 1 : 0));
+    public boolean isUrlBased() {
+        return isUrlBased;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Painting painting = (Painting) obj;
-        
-        // Compare names first
-        if (!name.equals(painting.name)) return false;
-        
-        // If both have URLs, compare them
-        if (imageUrl != null && painting.imageUrl != null) {
-            return imageUrl.equals(painting.imageUrl);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Painting painting = (Painting) o;
+        if (isUrlBased) {
+            return title.equals(painting.title) && imageUrl.equals(painting.imageUrl);
+        } else {
+            return title.equals(painting.title) && imageResId == painting.imageResId;
         }
-        
-        // If no URLs, compare resource IDs
-        return imageResId == painting.imageResId;
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
-        result = 31 * result + imageResId;
+        int result = title != null ? title.hashCode() : 0;
+        result = 31 * result + (isUrlBased ? (imageUrl != null ? imageUrl.hashCode() : 0) : imageResId);
         return result;
     }
 }

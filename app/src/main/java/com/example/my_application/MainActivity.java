@@ -133,10 +133,10 @@ public class MainActivity extends AppCompatActivity {
         paintingsGridView.setOnItemClickListener((parent, view, position, id) -> {
             Intent detailIntent = new Intent(MainActivity.this, PaintingDetailActivity.class);
             detailIntent.putExtra("paintingResId", paintingImages[position]);
-            detailIntent.putExtra("paintingName", paintingNames[position]);
-            detailIntent.putExtra("paintingDescription", paintingDescriptions[position]);
-            detailIntent.putExtra("paintingPrice", paintingPrices[position]);
-            detailIntent.putExtra("paintingArtist", paintingArtists[position]);
+            detailIntent.putExtra("painting_name", paintingNames[position]);  // Changed key to match
+            detailIntent.putExtra("painting_medium", paintingDescriptions[position]);  // Changed key to match
+            detailIntent.putExtra("painting_price", paintingPrices[position]);  // Changed key to match
+            detailIntent.putExtra("artist_name", paintingArtists[position]);  // Changed key to match
             detailIntent.putExtra("paintingId", "painting_" + position);
             startActivity(detailIntent);
         });
@@ -211,10 +211,9 @@ public class MainActivity extends AppCompatActivity {
         ImageView image2 = findViewById(R.id.image2);
         ImageView image3 = findViewById(R.id.image3);
 
+        // Set click listener for Featured Paintings (first carousel icon)
         image1.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, CarouselPainting.class);
-            intent.putExtra("csvFile", CSV_URL_1);
-            intent.putExtra("headingText", "Featured Paintings");
+            Intent intent = new Intent(MainActivity.this, FeaturedPaintingsActivity.class);
             startActivity(intent);
         });
 

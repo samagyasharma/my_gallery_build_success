@@ -57,10 +57,10 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
         toteBagRecyclerView.setHasFixedSize(true);
 
         // Get paintings from ToteBag
-        paintings = ToteBag.getInstance(this).getPaintings();
+        paintings = ToteBag.getInstance(this).getSelectedPaintings();
         Log.d(TAG, "Number of paintings in tote bag: " + paintings.size());
         for (Painting p : paintings) {
-            Log.d(TAG, "Painting in tote bag: " + p.getName() + ", Price: " + p.getPrice());
+            Log.d(TAG, "Painting in tote bag: " + p.getTitle() + ", Price: " + p.getPrice());
         }
 
         // Set up adapter
@@ -73,9 +73,17 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
         // Set up Buy Now button
         buyNowButton.setOnClickListener(v -> {
             ArrayList<Painting> selectedPaintings = new ArrayList<>();
+            int total = 0;
             for (Painting painting : paintings) {
-                if (painting.isSelected()) {
-                    selectedPaintings.add(painting);
+                // Get the checkbox state from the adapter instead
+                int position = paintings.indexOf(painting);
+                RecyclerView.ViewHolder viewHolder = 
+                    toteBagRecyclerView.findViewHolderForAdapterPosition(position);
+                if (viewHolder != null) {
+                    CheckBox checkbox = viewHolder.itemView.findViewById(R.id.paintingCheckbox);
+                    if (checkbox != null && checkbox.isChecked()) {
+                        selectedPaintings.add(painting);
+                    }
                 }
             }
             
@@ -109,7 +117,7 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
     protected void onResume() {
         super.onResume();
         // Refresh the list when activity resumes
-        paintings = ToteBag.getInstance(this).getPaintings();
+        paintings = ToteBag.getInstance(this).getSelectedPaintings();
         Log.d(TAG, "onResume: Number of paintings: " + paintings.size());
         if (toteBagAdapter != null) {
             toteBagAdapter.updatePaintings(paintings);
@@ -124,7 +132,7 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
         if (position >= 0 && position < paintings.size()) {
             Painting painting = paintings.get(position);
             ToteBag.getInstance(this).removePainting(painting);
-            toteBagAdapter.updatePaintings(ToteBag.getInstance(this).getPaintings());
+            toteBagAdapter.updatePaintings(ToteBag.getInstance(this).getSelectedPaintings());
             toteBagAdapter.notifyDataSetChanged();
             updateEmptyState();
             updateTotalPrice();
@@ -133,7 +141,24 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
 
     @Override
     public void onCheckboxChanged() {
-        updateTotalPrice();
+        int total = 0;
+        for (int i = 0; i < paintings.size(); i++) {
+            RecyclerView.ViewHolder viewHolder = 
+                toteBagRecyclerView.findViewHolderForAdapterPosition(i);
+            if (viewHolder != null) {
+                CheckBox checkbox = viewHolder.itemView.findViewById(R.id.paintingCheckbox);
+                if (checkbox != null && checkbox.isChecked()) {
+                    Painting painting = paintings.get(i);
+                    String priceStr = painting.getPrice().replaceAll("[^0-9]", "");
+                    try {
+                        total += Integer.parseInt(priceStr);
+                    } catch (NumberFormatException e) {
+                        Log.e(TAG, "Error parsing price for painting: " + painting.getTitle(), e);
+                    }
+                }
+            }
+        }
+        totalText.setText("Your total: Rs " + total);
     }
 
     private void updateTotalPrice() {
@@ -144,8 +169,11 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
     private int calculateSelectedTotal() {
         int total = 0;
         for (Painting painting : paintings) {
-            if (painting.isSelected()) {
-            total += painting.getPrice();
+            String priceStr = painting.getPrice().replaceAll("[^0-9]", "");
+            try {
+                total += Integer.parseInt(priceStr);
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "Error parsing price for painting: " + painting.getTitle(), e);
             }
         }
         return total;

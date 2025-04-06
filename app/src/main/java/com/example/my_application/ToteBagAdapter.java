@@ -48,9 +48,9 @@ public class ToteBagAdapter extends RecyclerView.Adapter<ToteBagAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Painting painting = paintings.get(position);
-        holder.paintingNameText.setText(painting.getName());
+        holder.paintingNameText.setText(painting.getTitle());
         holder.paintingPriceText.setText("Rs " + painting.getPrice());
-        holder.paintingCheckbox.setChecked(painting.isSelected());
+        holder.paintingCheckbox.setChecked(false);  // Default state
 
         // Load painting image
         if (painting.getImageUrl() != null && !painting.getImageUrl().isEmpty()) {
@@ -66,15 +66,14 @@ public class ToteBagAdapter extends RecyclerView.Adapter<ToteBagAdapter.ViewHold
             Intent intent = new Intent(holder.itemView.getContext(), PaintingDetailActivity.class);
             intent.putExtra("paintingResId", painting.getImageResId());
             intent.putExtra("paintingImage", painting.getImageUrl());
-            intent.putExtra("paintingName", painting.getName());
-            intent.putExtra("paintingDescription", painting.getDescription());
+            intent.putExtra("paintingName", painting.getTitle());
+            intent.putExtra("paintingDescription", painting.getMedium());  // Using medium instead of description
             intent.putExtra("paintingPrice", "Rs " + painting.getPrice());
             intent.putExtra("paintingArtist", painting.getArtist());
             holder.itemView.getContext().startActivity(intent);
         });
 
         holder.paintingCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            painting.setSelected(isChecked);
             listener.onCheckboxChanged();
         });
 

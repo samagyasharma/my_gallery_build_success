@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -76,82 +77,43 @@ public class PaintingDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_painting_detail);
 
-        // Initialize views
-        paintingImageView = findViewById(R.id.paintingImageView);
-        paintingTitle = findViewById(R.id.paintingTitle);
-        paintingDescription = findViewById(R.id.paintingDescription);
-        artistNameText = findViewById(R.id.artistName);
-        paintingPriceText = findViewById(R.id.paintingPrice);
-        heartButton = findViewById(R.id.heartButton);
-        shareButton = findViewById(R.id.shareButton);
-        addToToteBagButton = findViewById(R.id.addToToteBagButton);
-        commentEditText = findViewById(R.id.commentEditText);
-        commentSubmitButton = findViewById(R.id.commentSubmitButton);
-        commentsRecyclerView = findViewById(R.id.commentsRecyclerView);
-        zoomIcon = findViewById(R.id.zoomIcon);
-
-        // Initialize Firebase
-        db = FirebaseFirestore.getInstance();
+        // Initialize Firebase only if needed
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
-        // Get painting details from intent
-        paintingName = getIntent().getStringExtra("paintingName");
-        paintingResId = getIntent().getIntExtra("paintingResId", 0);
-        paintingImage = getIntent().getStringExtra("paintingImage");
-        paintingDesc = getIntent().getStringExtra("paintingDescription");
-        artistName = getIntent().getStringExtra("paintingArtist");
-        paintingPrice = getIntent().getStringExtra("paintingPrice");
-        currentPaintingId = getIntent().getStringExtra("paintingId");
-        
-        // Get the current user's name from the comment dialog
-        currentUserName = getSharedPreferences("UserPrefs", MODE_PRIVATE)
-                .getString("lastUsedName", null);
-
-        // Initialize views and setup
+        // Initialize views
         initializeViews();
-        setupPaintingDetails(paintingName, paintingDesc, artistName, paintingPrice);
-        setupCommentsRecyclerView();
-        setupCommentInput();
+        
+        // Load the painting details
+        loadPaintingDetails();
+
+        // Only setup comments if we have a paintingId
+        String paintingId = getIntent().getStringExtra("paintingId");
+        if (paintingId != null && commentsRecyclerView != null) {
+            setupCommentsRecyclerView();
+            setupCommentInput();
+        }
+
         setupShareButton();
     }
 
     private void initializeViews() {
-        // Initialize Firestore references
-        commentsRef = db.collection("paintings")
-                .document(currentPaintingId)
-                .collection("comments");
+        paintingImageView = findViewById(R.id.paintingImageView);
+        paintingTitle = findViewById(R.id.paintingTitle);  // Changed from paintingTitleTextView to match layout
+        paintingDescription = findViewById(R.id.paintingDescription);
+        artistNameText = findViewById(R.id.artistName);  // Make sure this matches layout ID
+        paintingPriceText = findViewById(R.id.paintingPrice);  // Make sure this matches layout ID
+        heartButton = findViewById(R.id.heartButton);
+        shareButton = findViewById(R.id.shareButton);
+        addToToteBagButton = findViewById(R.id.addToToteBagButton);
+        zoomIcon = findViewById(R.id.zoomIcon);
 
-        // Display painting details
-        if (paintingImage != null && !paintingImage.isEmpty()) {
-            Glide.with(this).load(paintingImage).into(paintingImageView);
-            paintingImageView.post(() -> adjustImageViewSize(paintingImageView));
-        } else if (paintingResId != 0) {
-            paintingImageView.setImageResource(paintingResId);
-            paintingImageView.post(() -> adjustImageViewSize(paintingImageView));
+        // Add debug check
+        if (paintingTitle == null) {
+            Log.e(TAG, "paintingTitle view not found!");
+        } else {
+            Log.d(TAG, "paintingTitle view found successfully");
         }
-        
-        paintingTitle.setText(paintingName);
-        paintingDescription.setText(paintingDesc);
-        artistNameText.setText("Artist: " + (artistName != null ? artistName : "Unknown"));
-        paintingPriceText.setText("Price: " + paintingPrice);
-
-        // Create the Painting object
-        currentPainting = new Painting(
-            paintingName,
-            paintingResId,
-            paintingImage != null ? paintingImage : "",
-            paintingDesc,
-            artistName,
-            parsePrice(paintingPrice)
-        );
-        
-        // Update heart button initial state
-        updateHeartButtonState(currentPainting);
-
-        // Set up click listeners and other functionality
-        setupHeartButton();
-        setupAddToToteBagButton();
-        setupImageClickListeners();
     }
 
     private int parsePrice(String paintingPrice) {
@@ -169,6 +131,10 @@ public class PaintingDetailActivity extends AppCompatActivity {
     }
 
     private void setupCommentsRecyclerView() {
+        if (commentsRecyclerView == null || currentPaintingId == null) {
+            return;  // Exit if RecyclerView or paintingId is not available
+        }
+
         Log.d(TAG, "Setting up comments recycler view for painting: " + currentPaintingId);
         
         // Set up the layout manager
@@ -183,12 +149,16 @@ public class PaintingDetailActivity extends AppCompatActivity {
         Log.d(TAG, "Firestore query path: paintings/" + currentPaintingId + "/comments");
 
         FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
-                        .setQuery(query, Comment.class)
-                        .build();
+                .setQuery(query, Comment.class)
+                .build();
 
-        commentsAdapter = new CommentsAdapter(options, this, currentUserName);
+        // Get the last used name from SharedPreferences
+        String lastUsedName = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+                .getString("lastUsedName", null);
+        
+        // Set up adapter and attach to RecyclerView
+        commentsAdapter = new CommentsAdapter(options, this, lastUsedName);
         commentsRecyclerView.setAdapter(commentsAdapter);
-        commentsAdapter.startListening();
     }
 
     /**
@@ -363,23 +333,20 @@ public class PaintingDetailActivity extends AppCompatActivity {
     }
 
     private void setupImageClickListeners() {
-        // Set up click listener for the painting image
-        paintingImageView.setOnClickListener(v -> {
+        View.OnClickListener zoomClickListener = v -> {
             Intent intent = new Intent(PaintingDetailActivity.this, ZoomedPaintingActivity.class);
             intent.putExtra("paintingName", paintingName);
+            
+            // Pass both the resource ID and image URL
             intent.putExtra("paintingResId", paintingResId);
             intent.putExtra("paintingImage", paintingImage);
+            
             startActivity(intent);
-        });
+        };
 
-        // Set up click listener for the zoom icon
-        zoomIcon.setOnClickListener(v -> {
-            Intent intent = new Intent(PaintingDetailActivity.this, ZoomedPaintingActivity.class);
-            intent.putExtra("paintingName", paintingName);
-            intent.putExtra("paintingResId", paintingResId);
-            intent.putExtra("paintingImage", paintingImage);
-            startActivity(intent);
-        });
+        // Set up click listener for both the painting image and zoom icon
+        paintingImageView.setOnClickListener(zoomClickListener);
+        zoomIcon.setOnClickListener(zoomClickListener);
     }
 
     private void setupPaintingDetails(String name, String description, String artist, String price) {
@@ -414,54 +381,45 @@ public class PaintingDetailActivity extends AppCompatActivity {
                         "Artist: " + artistNameText.getText().toString() + "\n" +
                         "Price: " + paintingPriceText.getText().toString() + "\n\n" +
                         "Shared from Art Gallery App";
+
+                // For both URL and resource-based images, we'll create a bitmap to share
+                paintingImageView.setDrawingCacheEnabled(true);
+                Bitmap bitmap = paintingImageView.getDrawingCache();
                 
-                // If we have a URL image, use it directly
-                if (paintingImage != null && !paintingImage.isEmpty()) {
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(paintingImage));
-                } else {
-                    // For local images, we need to create a temporary file
-                    // Get the bitmap from the ImageView
-                    paintingImageView.setDrawingCacheEnabled(true);
-                    Bitmap bitmap = paintingImageView.getDrawingCache();
-                    
-                    if (bitmap == null) {
-                        // If drawing cache is null, try to get the bitmap directly
-                        bitmap = ((android.graphics.drawable.BitmapDrawable) paintingImageView.getDrawable()).getBitmap();
-                    }
-                    
-                    if (bitmap != null) {
-                        // Create a unique filename
-                        String filename = "shared_painting_" + System.currentTimeMillis() + ".jpg";
-                        File file = new File(getExternalCacheDir(), filename);
-                        
-                        // Save the bitmap to a temporary file
-                        FileOutputStream fOut = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-                        fOut.flush();
-                        fOut.close();
-                        
-                        // Get the URI using FileProvider
-                        Uri contentUri = FileProvider.getUriForFile(
-                                this,
-                                getPackageName() + ".provider",
-                                file
-                        );
-                        
-                        // Grant temporary read permission to the content URI
-                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        
-                        // Add the file to the share intent
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                    } else {
-                        Toast.makeText(this, "Could not get image to share", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                if (bitmap == null) {
+                    bitmap = ((android.graphics.drawable.BitmapDrawable) paintingImageView.getDrawable()).getBitmap();
                 }
                 
-                // Start the share activity
-                startActivity(Intent.createChooser(shareIntent, "Share painting via"));
+                if (bitmap != null) {
+                    // Create a unique filename
+                    String filename = "shared_painting_" + System.currentTimeMillis() + ".jpg";
+                    File file = new File(getExternalCacheDir(), filename);
+                    
+                    // Save the bitmap to a temporary file
+                    FileOutputStream fOut = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                    fOut.flush();
+                    fOut.close();
+                    
+                    // Get the URI using FileProvider
+                    Uri contentUri = FileProvider.getUriForFile(
+                            this,
+                            getPackageName() + ".provider",
+                            file
+                    );
+                    
+                    // Grant temporary read permission to the content URI
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    
+                    // Add the file to the share intent
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                    
+                    // Start the share activity
+                    startActivity(Intent.createChooser(shareIntent, "Share painting via"));
+                } else {
+                    Toast.makeText(this, "Could not get image to share", Toast.LENGTH_SHORT).show();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Error sharing image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -469,5 +427,84 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 paintingImageView.setDrawingCacheEnabled(false);
             }
         });
+    }
+
+    private void loadPaintingDetails() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            // Get painting name with debug logging
+            paintingName = intent.getStringExtra("painting_name");
+            Log.d(TAG, "Received painting name: " + paintingName);
+
+            // Set the title with visibility check
+            if (paintingTitle != null && paintingName != null) {
+                paintingTitle.setText(paintingName);
+                paintingTitle.setVisibility(View.VISIBLE);
+                Log.d(TAG, "Set painting title text to: " + paintingName);
+            } else {
+                Log.e(TAG, "Failed to set title. paintingTitle: " + (paintingTitle != null) + 
+                          ", paintingName: " + (paintingName != null));
+            }
+
+            // Get all possible extras with null checks
+            paintingResId = intent.getIntExtra("paintingResId", 0);
+            paintingImage = intent.getStringExtra("painting_image");
+            String artistName = intent.getStringExtra("artist_name");
+            String paintingPrice = intent.getStringExtra("painting_price");
+            String paintingMedium = intent.getStringExtra("painting_medium");
+
+            // Add debug logging
+            Log.d(TAG, "Loading painting details:");
+            Log.d(TAG, "ResId: " + paintingResId);
+            Log.d(TAG, "Image URL: " + paintingImage);
+            Log.d(TAG, "Artist: " + artistName);
+            Log.d(TAG, "Price: " + paintingPrice);
+            Log.d(TAG, "Medium: " + paintingMedium);
+
+            // Create current painting object with safe values
+            currentPainting = new Painting(
+                paintingName != null ? paintingName : "",
+                artistName != null ? artistName : "",
+                paintingPrice != null ? paintingPrice : "",
+                paintingMedium != null ? paintingMedium : "",
+                paintingImage != null ? paintingImage : ""
+            );
+
+            // Set the views with null checks and debug messages
+            if (artistNameText != null && artistName != null) {
+                artistNameText.setText("Artist: " + artistName);
+                artistNameText.setVisibility(View.VISIBLE);
+            }
+            
+            if (paintingPriceText != null && paintingPrice != null) {
+                paintingPriceText.setText("Price: " + paintingPrice);
+                paintingPriceText.setVisibility(View.VISIBLE);
+            }
+            
+            if (paintingDescription != null && paintingMedium != null) {
+                paintingDescription.setText(paintingMedium);
+                paintingDescription.setVisibility(View.VISIBLE);
+            }
+
+            // Load the image
+            if (paintingImageView != null) {
+                if (paintingImage != null && !paintingImage.isEmpty()) {
+                    Glide.with(this)
+                            .load(paintingImage)
+                            .into(paintingImageView);
+                    Log.d(TAG, "Loading image from URL: " + paintingImage);
+                } else if (paintingResId != 0) {
+                    paintingImageView.setImageResource(paintingResId);
+                    Log.d(TAG, "Loading image from resource ID: " + paintingResId);
+                }
+            }
+
+            // Setup other UI elements
+            setupHeartButton();
+            setupAddToToteBagButton();
+            setupImageClickListeners();
+        } else {
+            Log.e(TAG, "Intent is null");
+        }
     }
 }

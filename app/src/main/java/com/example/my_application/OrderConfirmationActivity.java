@@ -13,13 +13,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+// Add these Volley imports
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class OrderConfirmationActivity extends AppCompatActivity {
     private ArrayList<Painting> selectedPaintings;
@@ -34,6 +44,12 @@ public class OrderConfirmationActivity extends AppCompatActivity {
     private TextView orderDetailsTextView;
     private Button confirmOrderButton;
     private Button cancelOrderButton;
+
+    // Google Form submission URL
+    private static final String GOOGLE_FORM_URL = "https://docs.google.com/forms/d/1NYlbDFmKLheLXltXnD7J5J3WIXBY7de7UD_yyrwPnfk/formResponse";
+    
+    // Form field entry ID
+    private static final String ENTRY_ORDER_DETAILS = "entry.564278724";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,9 +148,9 @@ public class OrderConfirmationActivity extends AppCompatActivity {
 
     private void setupButtons() {
         confirmOrderButton.setOnClickListener(v -> {
-            String userName = nameInput.getText().toString();
-            String userPhone = emailInput.getText().toString();
-            String deliveryAddress = addressInput.getText().toString();
+            String userName = nameInput.getText().toString().trim();
+            String userPhone = emailInput.getText().toString().trim();
+            String deliveryAddress = addressInput.getText().toString().trim();
 
             if (userName.isEmpty() || userPhone.isEmpty() || deliveryAddress.isEmpty()) {
                 Toast.makeText(this, "Please fill in all details", Toast.LENGTH_SHORT).show();
@@ -152,28 +168,56 @@ public class OrderConfirmationActivity extends AppCompatActivity {
                 paintingsList.setLength(paintingsList.length() - 2);
             }
 
-            // Send SMS with full details
-            SendSMSAPI.sendSMS("+919667965550", userName, userPhone, deliveryAddress, paintingsList.toString());
+            // Create message body in the same format as SMS
+            String messageBody = String.format(
+                "Order Confirmation\n\n" +
+                "Customer: %s\n" +
+                "Phone: %s\n" +
+                "Delivery Address: %s\n\n" +
+                "Order Details:\n%s\n\n" +
+                "Thank you for your order!",
+                userName, userPhone, deliveryAddress, paintingsList.toString()
+            );
 
-            // Remove selected paintings from ToteBag
-            removeSelectedPaintingsFromToteBag();
-
-            // Clear selected paintings after confirmation
-            selectedPaintings.clear();
-
-            // Show confirmation message
-            Toast.makeText(this, "Order Confirmed!", Toast.LENGTH_LONG).show();
-
-            // Navigate back to the main screen
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            // Submit to Google Form
+            submitToGoogleForm(messageBody);
         });
 
-        cancelOrderButton.setOnClickListener(v -> {
-            // Simply close the activity
-            finish();
-        });
+        cancelOrderButton.setOnClickListener(v -> finish());
+    }
+
+    private void submitToGoogleForm(String messageBody) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, GOOGLE_FORM_URL,
+                response -> {
+                    // Success handling
+                    Toast.makeText(this, "Order submitted successfully!", Toast.LENGTH_LONG).show();
+                    
+                    // Remove selected paintings from ToteBag
+                    removeSelectedPaintingsFromToteBag();
+
+                    // Clear selected paintings after confirmation
+                    selectedPaintings.clear();
+
+                    // Navigate back to the main screen
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                },
+                error -> {
+                    // Error handling
+                    Toast.makeText(this, "Failed to submit order. Please try again.", Toast.LENGTH_LONG).show();
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put(ENTRY_ORDER_DETAILS, messageBody);
+                return params;
+            }
+        };
+
+        queue.add(stringRequest);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.my_application;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -19,11 +21,23 @@ public class FeaturedPaintingsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FeaturedPaintingsAdapter adapter;
     private List<Painting> paintings;
+    private static final String DEFAULT_CSV_URL = "https://raw.githubusercontent.com/samagyasharma/art_gallery_application/refs/heads/main/csv_file2.csv";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_featured_paintings);
+
+        // Get intent extras
+        Intent intent = getIntent();
+        String headingText = intent.getStringExtra("headingText");
+        String csvUrl = intent.getStringExtra("csvUrl");
+
+        // Set heading if provided
+        TextView headingTextView = findViewById(R.id.featuredPaintingsHeading);
+        if (headingText != null) {
+            headingTextView.setText(headingText);
+        }
 
         recyclerView = findViewById(R.id.featuredPaintingsRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
@@ -32,13 +46,11 @@ public class FeaturedPaintingsActivity extends AppCompatActivity {
         adapter = new FeaturedPaintingsAdapter(this, paintings);
         recyclerView.setAdapter(adapter);
 
-        loadPaintingsFromCSV();
+        // Use provided CSV URL or fall back to default
+        loadPaintingsFromCSV(csvUrl != null ? csvUrl : DEFAULT_CSV_URL);
     }
 
-    private void loadPaintingsFromCSV() {
-        // Update the URL to your actual CSV file URL
-        String csvUrl = "https://raw.githubusercontent.com/samagyasharma/art_gallery_application/refs/heads/main/csv_file2.csv";
-        
+    private void loadPaintingsFromCSV(String csvUrl) {
         RequestQueue queue = Volley.newRequestQueue(this);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, csvUrl,
                 response -> {

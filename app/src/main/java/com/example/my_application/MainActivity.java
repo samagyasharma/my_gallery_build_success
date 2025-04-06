@@ -217,10 +217,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Updated click listener for Featured Artist (second carousel icon)
         image2.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, CarouselPainting.class);
-            intent.putExtra("csvFile", CSV_URL_2);
+            Intent intent = new Intent(MainActivity.this, FeaturedPaintingsActivity.class);
+            intent.putExtra("isArtistFeature", true);
             intent.putExtra("headingText", "Featured Artist");
+            intent.putExtra("csvUrl", "https://raw.githubusercontent.com/samagyasharma/art_gallery_application/refs/heads/main/csv_file_artist.csv");
             startActivity(intent);
         });
 

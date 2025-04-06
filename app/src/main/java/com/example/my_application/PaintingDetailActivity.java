@@ -175,7 +175,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
         }
 
         // Initialize Firestore
-        commentsRef = db.collection("paintings").document(paintingName).collection("comments");
+        commentsRef = db.collection("paintings").document(currentPaintingId).collection("comments");
 
         // Set up RecyclerView
         setupCommentsRecyclerView();

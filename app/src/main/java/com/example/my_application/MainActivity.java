@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
             detailIntent.putExtra("paintingDescription", paintingDescriptions[position]);
             detailIntent.putExtra("paintingPrice", paintingPrices[position]);
             detailIntent.putExtra("paintingArtist", paintingArtists[position]);
+            detailIntent.putExtra("paintingId", "painting_" + position);
             startActivity(detailIntent);
         });
 
@@ -315,17 +316,6 @@ public class MainActivity extends AppCompatActivity {
             // Load and set the image
             paintingImage.setImageResource(images[position]);
             paintingName.setText(names[position]);
-
-            // Set click listener for the entire item view
-            view.setOnClickListener(v -> {
-                Intent detailIntent = new Intent(context, PaintingDetailActivity.class);
-                detailIntent.putExtra("paintingResId", images[position]);
-                detailIntent.putExtra("paintingName", names[position]);
-                detailIntent.putExtra("paintingDescription", paintingDescriptions[position]);
-                detailIntent.putExtra("paintingPrice", paintingPrices[position]);
-                detailIntent.putExtra("paintingArtist", paintingArtists[position]);
-                context.startActivity(detailIntent);
-            });
 
             return view;
         }

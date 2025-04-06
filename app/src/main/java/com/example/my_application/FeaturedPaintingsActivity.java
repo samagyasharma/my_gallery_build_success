@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 public class FeaturedPaintingsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -35,6 +36,7 @@ public class FeaturedPaintingsActivity extends AppCompatActivity {
     }
 
     private void loadPaintingsFromCSV() {
+        // Update the URL to your actual CSV file URL
         String csvUrl = "https://raw.githubusercontent.com/samagyasharma/art_gallery_application/refs/heads/main/csv_file2.csv";
         
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -52,25 +54,42 @@ public class FeaturedPaintingsActivity extends AppCompatActivity {
                             }
                             
                             String[] data = line.split(",");
-                            if (data.length >= 5) {
+                            // Add logging to debug CSV parsing
+                            Log.d("CSV_PARSING", "Line: " + line);
+                            Log.d("CSV_PARSING", "Data length: " + data.length);
+                            
+                            if (data.length >= 5) {  // Minimum required columns
                                 String title = data[0].trim();
                                 String artist = data[1].trim();
                                 String price = data[2].trim();
                                 String imageUrl = data[4].trim();
+                                String description = data.length >= 6 ? data[5].trim() : "";
                                 
-                                paintings.add(new Painting(title, artist, price, imageUrl));
+                                // Add logging for parsed data
+                                Log.d("CSV_PARSING", "Title: " + title);
+                                Log.d("CSV_PARSING", "ImageUrl: " + imageUrl);
+                                
+                                Painting painting = new Painting(title, artist, price, imageUrl);
+                                painting.setDescription(description);
+                                paintings.add(painting);
                             }
                         }
                         
+                        Log.d("CSV_PARSING", "Total paintings loaded: " + paintings.size());
                         adapter.notifyDataSetChanged();
+                        
                     } catch (Exception e) {
+                        Log.e("CSV_PARSING", "Error parsing CSV: " + e.getMessage());
                         e.printStackTrace();
                         Toast.makeText(this, "Error loading paintings: " + e.getMessage(), 
                                 Toast.LENGTH_SHORT).show();
                     }
                 },
-                error -> Toast.makeText(this, "Error: " + error.getMessage(), 
-                        Toast.LENGTH_SHORT).show());
+                error -> {
+                    Log.e("CSV_PARSING", "Network Error: " + error.getMessage());
+                    Toast.makeText(this, "Error: " + error.getMessage(), 
+                            Toast.LENGTH_SHORT).show();
+                });
 
         queue.add(stringRequest);
     }

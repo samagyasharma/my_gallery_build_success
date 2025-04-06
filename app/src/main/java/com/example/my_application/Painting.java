@@ -7,29 +7,29 @@ public class Painting implements Parcelable {
     private String title;
     private String artist;
     private String price;
-    private String description;
     private String imageUrl;
+    private String description;
     private int imageResId;
-    private boolean isSelected;
+    private boolean selected;
 
-    // Constructor for URL-based paintings
+    // Constructor for URL-based images
     public Painting(String title, String artist, String price, String imageUrl) {
         this.title = title;
         this.artist = artist;
         this.price = price;
         this.imageUrl = imageUrl;
         this.imageResId = 0;
-        this.description = "";
+        this.selected = false;
     }
 
-    // Constructor for resource-based paintings
+    // Constructor for resource-based images
     public Painting(String title, String artist, String price, int imageResId) {
         this.title = title;
         this.artist = artist;
         this.price = price;
-        this.imageUrl = "";
         this.imageResId = imageResId;
-        this.description = "";
+        this.imageUrl = "";
+        this.selected = false;
     }
 
     // Parcelable constructor
@@ -37,10 +37,10 @@ public class Painting implements Parcelable {
         title = in.readString();
         artist = in.readString();
         price = in.readString();
-        description = in.readString();
         imageUrl = in.readString();
+        description = in.readString();
         imageResId = in.readInt();
-        isSelected = in.readByte() != 0;
+        selected = in.readByte() != 0;
     }
 
     // Parcelable CREATOR
@@ -67,27 +67,28 @@ public class Painting implements Parcelable {
         dest.writeString(title);
         dest.writeString(artist);
         dest.writeString(price);
-        dest.writeString(description);
         dest.writeString(imageUrl);
+        dest.writeString(description);
         dest.writeInt(imageResId);
-        dest.writeByte((byte) (isSelected ? 1 : 0));
+        dest.writeByte((byte) (selected ? 1 : 0));
     }
 
-    // Getters and setters
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
     public String getTitle() { return title; }
     public String getArtist() { return artist; }
     public String getPrice() { return price; }
     public String getImageUrl() { return imageUrl; }
     public int getImageResId() { return imageResId; }
-    public void setImageResId(int imageResId) { this.imageResId = imageResId; }
-    public boolean isUrlBased() { return imageUrl != null && !imageUrl.isEmpty(); }
-    public boolean isSelected() { return isSelected; }
-    public void setSelected(boolean selected) { isSelected = selected; }
-    public String getDescription() {
-        return description;
-    }
+    public String getDescription() { return description; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public void setDescription(String description) { this.description = description; }
+    
+    public boolean isUrlBased() { return !imageUrl.isEmpty(); }
 }

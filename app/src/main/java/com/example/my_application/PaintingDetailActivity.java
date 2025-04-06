@@ -99,21 +99,14 @@ public class PaintingDetailActivity extends AppCompatActivity {
 
     private void initializeViews() {
         paintingImageView = findViewById(R.id.paintingImageView);
-        paintingTitle = findViewById(R.id.paintingTitle);  // Changed from paintingTitleTextView to match layout
-        paintingDescription = findViewById(R.id.paintingDescription);
-        artistNameText = findViewById(R.id.artistName);  // Make sure this matches layout ID
-        paintingPriceText = findViewById(R.id.paintingPrice);  // Make sure this matches layout ID
+        paintingTitle = findViewById(R.id.paintingTitle);
+        paintingDescription = findViewById(R.id.paintingDescription);  // Make sure this ID matches your layout
+        artistNameText = findViewById(R.id.artistName);
+        paintingPriceText = findViewById(R.id.paintingPrice);
         heartButton = findViewById(R.id.heartButton);
         shareButton = findViewById(R.id.shareButton);
         addToToteBagButton = findViewById(R.id.addToToteBagButton);
         zoomIcon = findViewById(R.id.zoomIcon);
-
-        // Add debug check
-        if (paintingTitle == null) {
-            Log.e(TAG, "paintingTitle view not found!");
-        } else {
-            Log.d(TAG, "paintingTitle view found successfully");
-        }
     }
 
     private int parsePrice(String paintingPrice) {
@@ -453,11 +446,48 @@ public class PaintingDetailActivity extends AppCompatActivity {
     private void loadPaintingDetails() {
         Intent intent = getIntent();
         if (intent != null) {
+            // Get all painting details
             paintingName = intent.getStringExtra("painting_name");
             paintingResId = intent.getIntExtra("paintingResId", 0);
             paintingImage = intent.getStringExtra("painting_image");
             String artistName = intent.getStringExtra("artist_name");
             String paintingPrice = intent.getStringExtra("painting_price");
+            String description = intent.getStringExtra("painting_description");  // Get description
+
+            // Set the views with null checks
+            if (paintingTitle != null && paintingName != null) {
+                paintingTitle.setText(paintingName);
+                paintingTitle.setVisibility(View.VISIBLE);
+            }
+            
+            if (artistNameText != null && artistName != null) {
+                artistNameText.setText("Artist: " + artistName);
+                artistNameText.setVisibility(View.VISIBLE);
+            }
+            
+            if (paintingPriceText != null && paintingPrice != null) {
+                paintingPriceText.setText("Price: " + paintingPrice);
+                paintingPriceText.setVisibility(View.VISIBLE);
+            }
+            
+            // Set description with null check
+            if (description != null && !description.isEmpty() && paintingDescription != null) {
+                paintingDescription.setText(description);
+                paintingDescription.setVisibility(View.VISIBLE);
+            } else {
+                paintingDescription.setVisibility(View.GONE);  // Hide if no description
+            }
+
+            // Load the image
+            if (paintingImageView != null) {
+                if (paintingImage != null && !paintingImage.isEmpty()) {
+                    Glide.with(this)
+                            .load(paintingImage)
+                            .into(paintingImageView);
+                } else if (paintingResId != 0) {
+                    paintingImageView.setImageResource(paintingResId);
+                }
+            }
 
             // Create current painting object
             if (paintingResId != 0) {
@@ -475,32 +505,10 @@ public class PaintingDetailActivity extends AppCompatActivity {
                     paintingImage != null ? paintingImage : ""
                 );
             }
-
-            // Set the views
-            if (paintingTitle != null && paintingName != null) {
-                paintingTitle.setText(paintingName);
-                paintingTitle.setVisibility(View.VISIBLE);
-            }
             
-            if (artistNameText != null && artistName != null) {
-                artistNameText.setText("Artist: " + artistName);
-                artistNameText.setVisibility(View.VISIBLE);
-            }
-            
-            if (paintingPriceText != null && paintingPrice != null) {
-                paintingPriceText.setText("Price: " + paintingPrice);
-                paintingPriceText.setVisibility(View.VISIBLE);
-            }
-
-            // Load the image
-            if (paintingImageView != null) {
-                if (paintingImage != null && !paintingImage.isEmpty()) {
-                    Glide.with(this)
-                            .load(paintingImage)
-                            .into(paintingImageView);
-                } else if (paintingResId != 0) {
-                    paintingImageView.setImageResource(paintingResId);
-                }
+            // Set the description
+            if (description != null) {
+                currentPainting.setDescription(description);
             }
 
             setupHeartButton();

@@ -133,10 +133,10 @@ public class MainActivity extends AppCompatActivity {
         paintingsGridView.setOnItemClickListener((parent, view, position, id) -> {
             Intent detailIntent = new Intent(MainActivity.this, PaintingDetailActivity.class);
             detailIntent.putExtra("paintingResId", paintingImages[position]);
-            detailIntent.putExtra("painting_name", paintingNames[position]);  // Changed key to match
-            detailIntent.putExtra("painting_medium", paintingDescriptions[position]);  // Changed key to match
-            detailIntent.putExtra("painting_price", paintingPrices[position]);  // Changed key to match
-            detailIntent.putExtra("artist_name", paintingArtists[position]);  // Changed key to match
+            detailIntent.putExtra("painting_name", paintingNames[position]);
+            detailIntent.putExtra("painting_description", paintingDescriptions[position]);  // Changed key
+            detailIntent.putExtra("painting_price", paintingPrices[position]);
+            detailIntent.putExtra("artist_name", paintingArtists[position]);
             detailIntent.putExtra("paintingId", "painting_" + position);
             startActivity(detailIntent);
         });

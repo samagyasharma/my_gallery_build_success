@@ -2,8 +2,10 @@ package com.example.my_application;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,6 +30,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -52,6 +58,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
     ImageView paintingImageView;
     TextView paintingTitle, paintingDescription, artistNameText, paintingPriceText;
     ImageButton heartButton;
+    ImageButton shareButton;
     Button addToToteBagButton, commentSubmitButton;
     EditText commentEditText;
     ImageView zoomIcon;
@@ -59,6 +66,10 @@ public class PaintingDetailActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String currentPaintingId;
     private String currentUserName;
+    private boolean isFavorite = false;
+    private String currentPaintingName;
+    private int currentPaintingResourceId;
+    private String currentPaintingImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +83,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
         artistNameText = findViewById(R.id.artistName);
         paintingPriceText = findViewById(R.id.paintingPrice);
         heartButton = findViewById(R.id.heartButton);
+        shareButton = findViewById(R.id.shareButton);
         addToToteBagButton = findViewById(R.id.addToToteBagButton);
         commentEditText = findViewById(R.id.commentEditText);
         commentSubmitButton = findViewById(R.id.commentSubmitButton);
@@ -100,6 +112,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
         setupPaintingDetails(paintingName, paintingDesc, artistName, paintingPrice);
         setupCommentsRecyclerView();
         setupCommentInput();
+        setupShareButton();
     }
 
     private void initializeViews() {
@@ -386,5 +399,75 @@ public class PaintingDetailActivity extends AppCompatActivity {
         if (paintingResId != 0) {
             paintingImageView.setImageResource(paintingResId);
         }
+    }
+
+    private void setupShareButton() {
+        shareButton.setOnClickListener(v -> {
+            try {
+                // Create sharing intent
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("image/*");
+                
+                // Add painting details to the share text
+                String shareText = "Check out this beautiful painting!\n\n" +
+                        "Title: " + paintingName + "\n" +
+                        "Artist: " + artistNameText.getText().toString() + "\n" +
+                        "Price: " + paintingPriceText.getText().toString() + "\n\n" +
+                        "Shared from Art Gallery App";
+                
+                // If we have a URL image, use it directly
+                if (paintingImage != null && !paintingImage.isEmpty()) {
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(paintingImage));
+                } else {
+                    // For local images, we need to create a temporary file
+                    // Get the bitmap from the ImageView
+                    paintingImageView.setDrawingCacheEnabled(true);
+                    Bitmap bitmap = paintingImageView.getDrawingCache();
+                    
+                    if (bitmap == null) {
+                        // If drawing cache is null, try to get the bitmap directly
+                        bitmap = ((android.graphics.drawable.BitmapDrawable) paintingImageView.getDrawable()).getBitmap();
+                    }
+                    
+                    if (bitmap != null) {
+                        // Create a unique filename
+                        String filename = "shared_painting_" + System.currentTimeMillis() + ".jpg";
+                        File file = new File(getExternalCacheDir(), filename);
+                        
+                        // Save the bitmap to a temporary file
+                        FileOutputStream fOut = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                        fOut.flush();
+                        fOut.close();
+                        
+                        // Get the URI using FileProvider
+                        Uri contentUri = FileProvider.getUriForFile(
+                                this,
+                                getPackageName() + ".provider",
+                                file
+                        );
+                        
+                        // Grant temporary read permission to the content URI
+                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        
+                        // Add the file to the share intent
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                    } else {
+                        Toast.makeText(this, "Could not get image to share", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                
+                // Start the share activity
+                startActivity(Intent.createChooser(shareIntent, "Share painting via"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error sharing image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            } finally {
+                paintingImageView.setDrawingCacheEnabled(false);
+            }
+        });
     }
 }

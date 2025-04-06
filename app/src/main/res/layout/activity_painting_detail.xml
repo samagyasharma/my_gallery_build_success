@@ -77,6 +77,16 @@
                     android:fontFamily="@font/caveat" />
 
                 <ImageButton
+                    android:id="@+id/shareButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/rounded_button"
+                    android:src="@drawable/ic_share"
+                    android:contentDescription="Share painting"
+                    android:padding="12dp"
+                    android:layout_marginEnd="8dp" />
+
+                <ImageButton
                     android:id="@+id/heartButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"

@@ -33,6 +33,12 @@
         <activity android:name=".ContactMe" />
 
         <!-- Main Activity -->
+        <activity android:name=".OrderConfirmationActivity" />
+
+        <!-- Main Activity -->
+        <activity android:name=".CarouselPainting" />
+
+        <!-- Main Activity -->
         <activity android:name=".DynamicBackground" />
 
         <!-- Main Activity -->

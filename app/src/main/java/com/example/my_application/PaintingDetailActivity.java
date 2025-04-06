@@ -350,15 +350,19 @@ public class PaintingDetailActivity extends AppCompatActivity {
     }
 
     private void setupImageClickListeners() {
+        // Set up click listener for the painting image
         paintingImageView.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ZoomedPaintingActivity.class);
+            Intent intent = new Intent(PaintingDetailActivity.this, ZoomedPaintingActivity.class);
+            intent.putExtra("paintingName", paintingName);
             intent.putExtra("paintingResId", paintingResId);
             intent.putExtra("paintingImage", paintingImage);
             startActivity(intent);
         });
 
+        // Set up click listener for the zoom icon
         zoomIcon.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ZoomedPaintingActivity.class);
+            Intent intent = new Intent(PaintingDetailActivity.this, ZoomedPaintingActivity.class);
+            intent.putExtra("paintingName", paintingName);
             intent.putExtra("paintingResId", paintingResId);
             intent.putExtra("paintingImage", paintingImage);
             startActivity(intent);

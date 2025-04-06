@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/painting_border"
+    android:padding="2dp"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/paintingImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/paintingName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="#800080"
+        android:textStyle="bold"
+        android:fontFamily="@font/caveat"
+        android:gravity="center"
+        android:padding="8dp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+</LinearLayout> 

@@ -1,28 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFD9E6"
+    android:background="#FFF5EB"
     tools:context=".ZoomedPaintingActivity">
 
-    <!-- Toolbar with title android:background="@android:color/transparent" -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <!-- Zoomable Image with semi-transparent overlay -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/zoomableImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"/>
+
+        <!-- Gradient overlay for better visibility of controls -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@drawable/top_gradient_overlay"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bottom_gradient_overlay"/>
+    </FrameLayout>
+
+    <!-- Toolbar with modern styling -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:elevation="0dp">
 
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:title="Have a Closer Look!"
-        android:textColor="#800080"
-        android:titleTextColor="@android:color/black" />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:title="Have a Closer Look!"
+            app:titleTextColor="#800080"
+            app:navigationIconTint="#800080"
+            app:titleTextAppearance="@style/ToolbarTitleStyle"/>
 
-    <!-- Zoomable Image -->
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/zoomableImageView"
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Bottom controls -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"/>
-</LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/zoomHintText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pinch to zoom • Double tap to reset"
+            android:textColor="#800080"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:alpha="0.8"/>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,11 +1,20 @@
 package com.example.my_application;
 
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.Toast;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.LinearLayout;
 
 import androidx.activity.OnBackPressedCallback;
@@ -15,11 +24,14 @@ public class MainActivity extends AppCompatActivity {
 
     GridView paintingsGridView;
     LinearLayout bottomNavigation;
-    Button toteBagButton, aboutMeButton, contactButton;
+    LinearLayout toteBagLayout, aboutMeLayout, contactLayout;
+    TextView toteBagButton, aboutMeButton, contactButton;
+    HorizontalScrollView featuredCarousel;
+    LinearLayout carouselContainer;
 
     // Variables to track scrolling behavior
-    private int lastScrollY = 0; // Tracks the last Y scroll position
-    private boolean isBottomNavigationVisible = true; // Tracks if the bottom navigation is visible
+    private int lastScrollY = 0;
+    private boolean isBottomNavigationVisible = true;
 
     // Example paintings for the GridView
     int[] paintingImages = {
@@ -31,8 +43,54 @@ public class MainActivity extends AppCompatActivity {
             R.drawable.my_paint6,
             R.drawable.my_paint7,
             R.drawable.my_paint8,
-
     };
+
+    String[] paintingNames = {
+            "Sunset Bliss",
+            "Ocean Waves",
+            "Mystic Forest",
+            "Golden Horizon",
+            "Abstract Dreams",
+            "Silent Night",
+            "Serene Beauty",
+            "Colorful Chaos"
+    };
+
+    String[] paintingDescriptions = {
+            "A beautiful sunset over the ocean",
+            "Waves crashing on the shore",
+            "A mystical forest at dawn",
+            "Golden light on the horizon",
+            "Abstract patterns and colors",
+            "A peaceful night scene",
+            "Serene landscape with mountains",
+            "Colorful abstract composition"
+    };
+
+    String[] paintingPrices = {
+            "$299",
+            "$349",
+            "$399",
+            "$449",
+            "$499",
+            "$549",
+            "$599",
+            "$649"
+    };
+
+    String[] paintingArtists = {
+            "Samagya Sharma",
+            "Samagya Sharma",
+            "Samagya Sharma",
+            "Samagya Sharma",
+            "Samagya Sharma",
+            "Samagya Sharma",
+            "Samagya Sharma",
+            "Samagya Sharma"
+    };
+
+    private static final String CSV_URL_1 = "https://raw.githubusercontent.com/samagyasharma/art_gallery_application/refs/heads/main/paintings.csv";
+    private static final String CSV_URL_2 = "https://raw.githubusercontent.com/samagyasharma/art_gallery_application/refs/heads/main/featured_artist.csv";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,41 +100,57 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Views
         paintingsGridView = findViewById(R.id.paintingsGridView);
         bottomNavigation = findViewById(R.id.bottomNavigation);
+        toteBagLayout = findViewById(R.id.toteBagLayout);
+        aboutMeLayout = findViewById(R.id.aboutMeLayout);
+        contactLayout = findViewById(R.id.contactLayout);
         toteBagButton = findViewById(R.id.toteBagButton);
         aboutMeButton = findViewById(R.id.aboutMeButton);
         contactButton = findViewById(R.id.contactButton);
+        featuredCarousel = findViewById(R.id.featuredCarousel);
+        carouselContainer = findViewById(R.id.carouselContainer);
 
-        // Set Adapter for GridView
-        PaintingsAdapter adapter = new PaintingsAdapter(this, paintingImages);
+        // Set click listeners for carousel items
+        setupCarousel();
+
+        // Get screen width and calculate item size based on orientation
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+        int itemWidth;
+        
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // In portrait mode, use 90% of screen width
+            itemWidth = (int) (screenWidth * 0.9);
+        } else {
+            // In landscape mode, use 45% of screen width
+            itemWidth = (int) (screenWidth * 0.45);
+        }
+
+        // Set Adapter for GridView with custom item size
+        PaintingsAdapter adapter = new PaintingsAdapter(this, paintingImages, paintingNames, itemWidth);
         paintingsGridView.setAdapter(adapter);
 
         // Handle Grid Item Clicks
         paintingsGridView.setOnItemClickListener((parent, view, position, id) -> {
             Intent detailIntent = new Intent(MainActivity.this, PaintingDetailActivity.class);
             detailIntent.putExtra("paintingResId", paintingImages[position]);
-            detailIntent.putExtra("paintingName", "Painting " + (position + 1));
+            detailIntent.putExtra("paintingName", paintingNames[position]);
+            detailIntent.putExtra("paintingDescription", paintingDescriptions[position]);
+            detailIntent.putExtra("paintingPrice", paintingPrices[position]);
+            detailIntent.putExtra("paintingArtist", paintingArtists[position]);
             startActivity(detailIntent);
         });
 
         // Handle Bottom Navigation Button Clicks
-        toteBagButton.setOnClickListener(v -> {
-            Toast.makeText(MainActivity.this, "Tote Bag Button Clicked!", Toast.LENGTH_SHORT).show();
-            Intent toteBagIntent = new Intent(MainActivity.this, ToteBagActivity.class);
-            startActivity(toteBagIntent);
-        });
-        aboutMeButton.setOnClickListener(v -> {
-            // Show Toast message
-            Toast.makeText(MainActivity.this, "About Me", Toast.LENGTH_SHORT).show();
-
-            // Navigate to NewActivity
-            Intent intent = new Intent(MainActivity.this, AboutMe.class);
-            startActivity(intent);
+        toteBagLayout.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, ToteBagActivity.class));
         });
 
-        contactButton.setOnClickListener(v -> {
-            Toast.makeText(MainActivity.this, "Contact Me", Toast.LENGTH_SHORT).show();
-            Intent contactIntent = new Intent(MainActivity.this, ContactMe.class);
-            startActivity(contactIntent);
+        aboutMeLayout.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, AboutMe.class));
+        });
+
+        contactLayout.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, ContactMe.class));
         });
 
         // Add Scroll Listener to GridView
@@ -90,16 +164,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int currentScrollY = absListView.getChildAt(0) == null
-                        ? 0
-                        : absListView.getChildAt(0).getTop();
+                if (absListView.getChildAt(0) == null) return;
 
+                int currentScrollY = absListView.getChildAt(0).getTop();
                 if (currentScrollY > lastScrollY) {
                     showBottomNavigation();
                 } else if (currentScrollY < lastScrollY) {
                     hideBottomNavigation();
                 }
-
                 lastScrollY = currentScrollY;
             }
         });
@@ -108,10 +180,58 @@ public class MainActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // Move the task to the background instead of exiting the app
                 moveTaskToBack(true);
             }
         });
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        
+        // Recalculate item width based on new orientation
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+        int itemWidth;
+        
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            itemWidth = (int) (screenWidth * 0.9);
+        } else {
+            itemWidth = (int) (screenWidth * 0.45);
+        }
+        
+        // Update adapter with new item width
+        PaintingsAdapter adapter = new PaintingsAdapter(this, paintingImages, paintingNames, itemWidth);
+        paintingsGridView.setAdapter(adapter);
+    }
+
+    private void setupCarousel() {
+        ImageView image1 = findViewById(R.id.image1);
+        ImageView image2 = findViewById(R.id.image2);
+        ImageView image3 = findViewById(R.id.image3);
+
+        image1.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, CarouselPainting.class);
+            intent.putExtra("csvFile", CSV_URL_1);
+            intent.putExtra("headingText", "Featured Paintings");
+            startActivity(intent);
+        });
+
+        image2.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, CarouselPainting.class);
+            intent.putExtra("csvFile", CSV_URL_2);
+            intent.putExtra("headingText", "Featured Artist");
+            startActivity(intent);
+        });
+
+        image3.setOnClickListener(v -> openGoogleForm());
+    }
+
+    private static final String GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSchaG57nroCPadIP4ej9d2XnOx40C3-yTJPZ6t1stHKNX2xug/viewform?usp=dialog";
+
+    private void openGoogleForm() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(GOOGLE_FORM_URL));
+        startActivity(intent);
     }
 
     private void hideBottomNavigation() {
@@ -125,6 +245,89 @@ public class MainActivity extends AppCompatActivity {
         if (!isBottomNavigationVisible) {
             bottomNavigation.animate().translationY(0).setDuration(300).start();
             isBottomNavigationVisible = true;
+        }
+    }
+
+    // Custom Adapter for GridView
+    private class PaintingsAdapter extends BaseAdapter {
+        private MainActivity context;
+        private int[] images;
+        private String[] names;
+        private int itemWidth;
+
+        public PaintingsAdapter(MainActivity context, int[] images, String[] names, int itemWidth) {
+            this.context = context;
+            this.images = images;
+            this.names = names;
+            this.itemWidth = itemWidth;
+        }
+
+        @Override
+        public int getCount() {
+            return images.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            if (view == null) {
+                view = getLayoutInflater().inflate(R.layout.item_painting, parent, false);
+            }
+
+            ImageView paintingImage = view.findViewById(R.id.paintingImage);
+            TextView paintingName = view.findViewById(R.id.paintingName);
+
+            // Get the original image dimensions
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(getResources(), images[position], options);
+            
+            // Calculate aspect ratio
+            float aspectRatio = (float) options.outWidth / options.outHeight;
+            
+            // Determine if image is landscape or portrait
+            boolean isLandscape = aspectRatio > 1.0f;
+            
+            // Calculate width based on orientation
+            int targetWidth = isLandscape ? 
+                (int) (getResources().getDisplayMetrics().widthPixels * 0.7f) : 
+                (int) (getResources().getDisplayMetrics().widthPixels * 0.6f);
+            
+            // Calculate height to maintain aspect ratio
+            int targetHeight = (int) (targetWidth / aspectRatio);
+            
+            // Set the image view dimensions
+            ViewGroup.LayoutParams params = paintingImage.getLayoutParams();
+            params.width = targetWidth;
+            params.height = targetHeight;
+            paintingImage.setLayoutParams(params);
+
+            // Load and set the image
+            paintingImage.setImageResource(images[position]);
+            paintingName.setText(names[position]);
+
+            // Set click listener for the entire item view
+            view.setOnClickListener(v -> {
+                Intent detailIntent = new Intent(context, PaintingDetailActivity.class);
+                detailIntent.putExtra("paintingResId", images[position]);
+                detailIntent.putExtra("paintingName", names[position]);
+                detailIntent.putExtra("paintingDescription", paintingDescriptions[position]);
+                detailIntent.putExtra("paintingPrice", paintingPrices[position]);
+                detailIntent.putExtra("paintingArtist", paintingArtists[position]);
+                context.startActivity(detailIntent);
+            });
+
+            return view;
         }
     }
 }

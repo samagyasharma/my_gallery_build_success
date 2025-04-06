@@ -1,42 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F4C2C2">
+    android:background="#FFF5EB">
 
     <!-- Moving Background -->
     <com.example.my_application.MovingBackgroundView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!-- Decorative Top Bar -->
+    <View
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="#800080"
+        android:layout_alignParentTop="true"/>
 
-    <!-- About Me Header -->
+    <!-- ScrollView for Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topBar"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Header -->
+            <TextView
+                android:id="@+id/nameText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="About Me"
+                android:textSize="32sp"
+                android:textColor="#800080"
+                android:textStyle="bold"
+                android:fontFamily="@font/caveat"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:layout_gravity="center_horizontal"/>
+
+            <!-- Profile Image Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/profileImage"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:src="@drawable/profile_image"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="Profile Image"
+                        android:background="@drawable/circle_background"/>
+
     <TextView
-        android:id="@+id/aboutMeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="About Me !"
-        android:textSize="26sp"
+                        android:text="Samagya Sharma"
+                        android:textSize="24sp"
         android:textColor="#800080"
         android:textStyle="bold"
         android:fontFamily="@font/caveat"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp" />
+                        android:layout_marginTop="16dp"/>
 
-    <!-- About Me Content -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Artist &amp; Software Engineer"
+                        android:textSize="16sp"
+                        android:textColor="#666666"
+                        android:fontFamily="@font/lora"
+                        android:layout_marginTop="4dp"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Bio Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="About"
+                        android:textSize="18sp"
+                        android:textColor="#800080"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/caveat"/>
+
     <TextView
-        android:id="@+id/aboutMeContent"
+                        android:id="@+id/bioText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hi! I am Samagya Sharma. I am a software engineer at Samsung, passionate about technology and creativity. In my free time, I love to paint using various mediums like watercolors, acrylics, and mixed media. Each piece I create tells a unique story, and I enjoy experimenting with different techniques to bring my visions to life."
+                        android:textSize="16sp"
+                        android:textColor="#333333"
+                        android:fontFamily="@font/lora"
+                        android:layout_marginTop="8dp"
+                        android:lineSpacingExtra="4dp"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Contact Info Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hi ! I am Samagya Sharma. I am a software engineer at Samsung, passionate about technology and creativity. In my free time, I love to paint using various mediums like watercolors, acrylics, and mixed media. Each piece I create tells a unique story, and I enjoy experimenting with different techniques to bring my visions to life."
+                        android:text="Contact Information"
         android:textSize="18sp"
-        android:textColor="#000"
+                        android:textColor="#800080"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/caveat"/>
+
+                    <TextView
+                        android:id="@+id/contactInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Email: samagya.sharma@samsung.com\nPhone: (123) 456-7890"
+                        android:textSize="16sp"
+                        android:textColor="#333333"
         android:fontFamily="@font/lora"
-        android:layout_below="@id/aboutMeTitle"
-        android:layout_centerHorizontal="true"
-        android:padding="20dp"
-        android:lineSpacingExtra="6dp" />
+                        android:layout_marginTop="8dp"
+                        android:lineSpacingExtra="4dp"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

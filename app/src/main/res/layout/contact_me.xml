@@ -1,83 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F4C2C2">
+    android:background="#FFF5EB">
 
     <!-- Moving Background -->
     <com.example.my_application.MovingBackgroundView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Contact Me Header -->
+    <!-- Decorative Top Bar -->
+    <View
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="#800080"
+        android:layout_alignParentTop="true"/>
+
+    <!-- ScrollView for Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topBar"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Header -->
     <TextView
         android:id="@+id/contactMeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Contact Me !"
-        android:textSize="26sp"
+                android:text="Contact Me"
+                android:textSize="32sp"
         android:textColor="#800080"
         android:textStyle="bold"
         android:fontFamily="@font/caveat"
-        android:layout_marginTop="50dp"
-        android:layout_marginStart="20dp" />
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_gravity="center_horizontal"/>
 
-    <!-- WhatsApp Message -->
+            <!-- Welcome Message -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Please feel free to reach out to me directly or report any issue on our Customer Support Website !"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:fontFamily="@font/lora"
+                android:textAlignment="center"
+                android:layout_marginBottom="24dp"
+                android:lineSpacingExtra="4dp"/>
+
+            <!-- WhatsApp Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="WhatsApp"
+                        android:textSize="18sp"
+                        android:textColor="#800080"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/caveat"/>
+
     <TextView
         android:id="@+id/contactMeContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="WhatsApp your concerns! 9667965550"
-        android:textSize="18sp"
-        android:textColor="#000"
-        android:fontFamily="@font/lora"
-        android:layout_below="@id/contactMeTitle"
-        android:paddingTop="10dp"
-        android:lineSpacingExtra="6dp"
-        android:layout_marginStart="20dp" />
+                        android:text="9667965550"
+                        android:textSize="16sp"
+                        android:textColor="#333333"
+                        android:fontFamily="@font/lora"
+                        android:layout_marginTop="8dp"
+                        android:drawableStart="@drawable/ic_whatsapp"
+                        android:drawablePadding="8dp"/>
 
-    <!-- Email Address (Clickable) -->
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Email Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Email"
+        android:textSize="18sp"
+                        android:textColor="#800080"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/caveat"/>
+
     <TextView
         android:id="@+id/emailText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Email: samagyasharma05@gmail.com"
-        android:textSize="18sp"
-        android:textColor="#0000EE"
-        android:textStyle="bold"
-        android:fontFamily="@font/lora"
-        android:autoLink="email"
-        android:layout_below="@id/contactMeContent"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp" />
+                        android:text="samagyasharma05@gmail.com"
+                        android:textSize="16sp"
+                        android:textColor="#333333"
+                        android:fontFamily="@font/lora"
+                        android:layout_marginTop="8dp"
+                        android:drawableStart="@drawable/ic_email"
+                        android:drawablePadding="8dp"/>
 
-    <!-- Website Description -->
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Customer Support Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Customer Support"
+        android:textSize="18sp"
+                        android:textColor="#800080"
+        android:textStyle="bold"
+                        android:fontFamily="@font/caveat"/>
+
     <TextView
         android:id="@+id/reportIssueText"
-        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="For any order related or other concerns, please report here!"
-        android:textSize="16sp"
-        android:textColor="#000"
+                        android:text="For any order related or other concerns, please visit our support website:"
+                        android:textSize="14sp"
+                        android:textColor="#666666"
         android:fontFamily="@font/lora"
-        android:layout_below="@id/emailText"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="20dp" />
+                        android:layout_marginTop="8dp"/>
 
-    <!-- Hyperlink to Website -->
     <TextView
         android:id="@+id/websiteLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:text="Customer Concerns Website"
-        android:textSize="18sp"
-        android:textColor="#0000EE"
+                        android:textSize="16sp"
+                        android:textColor="#800080"
         android:textStyle="bold"
-        android:fontFamily="@font/lora"
-        android:autoLink="web"
-        android:layout_below="@id/reportIssueText"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp" />
+                        android:fontFamily="@font/caveat"
+                        android:layout_marginTop="8dp"
+                        android:drawableStart="@drawable/ic_website"
+                        android:drawablePadding="8dp"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

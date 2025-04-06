@@ -2,65 +2,67 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFD9E6">
+    android:background="#FFF5EB"
+    android:padding="16dp">
 
-
-    <!-- Header Title -->
     <TextView
-        android:id="@+id/toteBagTitle"
+        android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tote Bag"
-        android:textSize="26sp"
+        android:text="Your Tote Bag"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="#800080"
-        android:fontFamily="@font/caveat"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp" />
+        android:layout_marginBottom="16dp"/>
 
-    <!-- Tote Bag Item Container -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/toteBagTitle"
-        android:layout_marginTop="16dp"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:id="@+id/toteBagContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <!-- Empty State Message -->
-            <TextView
-                android:id="@+id/noItemsMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Your Tote Bag is empty!"
-                android:textSize="16sp"
-                android:textStyle="italic"
-                android:textColor="#000"
-                android:fontFamily="@font/lora"
-                android:layout_gravity="center"
-                android:padding="8dp"
-                android:visibility="visible" />
-        </LinearLayout>
-    </ScrollView>
-
-    <!-- Buy Now Button -->
-    <Button
-        android:id="@+id/buyNowButton"
+    <TextView
+        android:id="@+id/emptyStateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Buy Now"
+        android:layout_centerInParent="true"
+        android:text="Your Tote Bag is empty!"
         android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#FFF"
-        android:backgroundTint="#F77A55"
-        android:layout_centerHorizontal="true"
+        android:textStyle="italic"
+        android:textColor="#800080"
+        android:visibility="gone"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/toteBagRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/titleText"
+        android:layout_above="@id/bottomContainer"
+        android:layout_marginBottom="8dp"
+        android:clipToPadding="false" />
+
+    <LinearLayout
+        android:id="@+id/bottomContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
-        android:padding="12dp"/>
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/rounded_comment_background">
+
+        <TextView
+            android:id="@+id/totalText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your total: Rs 0"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#800080"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/buyNowButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Buy Now"
+            android:textColor="#FFFFFF"
+            style="@style/RoundedButton"
+            android:background="@drawable/rounded_button"/>
+
+    </LinearLayout>
+
 </RelativeLayout>

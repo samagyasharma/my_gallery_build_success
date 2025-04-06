@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFD9E6">
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/confirmButton">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Header Title -->
+            <TextView
+                android:id="@+id/checkoutTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Order Confirmation"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="#800080"
+                android:fontFamily="@font/caveat"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp" />
+
+            <!-- Total Price -->
+            <TextView
+                android:id="@+id/totalPriceText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#800080"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp" />
+
+            <!-- Selected Paintings Grid -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/selectedPaintingsGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="8dp" />
+
+            <!-- Order Info Text -->
+            <TextView
+                android:id="@+id/orderInfoText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The details of your order will be given to the respective artists and you will be contacted on your given phone number and email id on the availability of the painting and the feasibility of the delivery location. Further delivery charges may be applied."
+                android:textSize="14sp"
+                android:textColor="#000000"
+                android:textAlignment="center"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:layout_marginTop="16dp" />
+
+            <!-- User Details Form -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:padding="16dp">
+
+                <EditText
+                    android:id="@+id/fullName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Full Name"
+                    android:textSize="16sp"
+                    android:padding="12dp"
+                    android:background="@android:drawable/editbox_background" />
+
+                <EditText
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Email"
+                    android:textSize="16sp"
+                    android:padding="12dp"
+                    android:background="@android:drawable/editbox_background"
+                    android:inputType="textEmailAddress"
+                    android:layout_marginTop="8dp" />
+
+                <EditText
+                    android:id="@+id/address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Delivery Address"
+                    android:textSize="16sp"
+                    android:padding="12dp"
+                    android:background="@android:drawable/editbox_background"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Confirm and Send Details Button -->
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm and Send Details!"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#FFF"
+        android:backgroundTint="#F77A55"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:padding="12dp" />
+
+</RelativeLayout>

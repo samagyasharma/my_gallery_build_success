@@ -134,10 +134,11 @@ public class MainActivity extends AppCompatActivity {
             Intent detailIntent = new Intent(MainActivity.this, PaintingDetailActivity.class);
             detailIntent.putExtra("paintingResId", paintingImages[position]);
             detailIntent.putExtra("painting_name", paintingNames[position]);
-            detailIntent.putExtra("painting_description", paintingDescriptions[position]);  // Changed key
+            detailIntent.putExtra("painting_description", paintingDescriptions[position]);
             detailIntent.putExtra("painting_price", paintingPrices[position]);
             detailIntent.putExtra("artist_name", paintingArtists[position]);
-            detailIntent.putExtra("paintingId", "painting_" + position);
+            // Use painting name as the ID
+            detailIntent.putExtra("paintingId", paintingNames[position]);
             startActivity(detailIntent);
         });
 

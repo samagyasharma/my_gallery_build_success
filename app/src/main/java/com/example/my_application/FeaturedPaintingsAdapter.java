@@ -41,36 +41,20 @@ public class FeaturedPaintingsAdapter extends RecyclerView.Adapter<FeaturedPaint
         
         holder.titleTextView.setText(painting.getTitle());
         holder.artistTextView.setText(painting.getArtist());
-        // Add "Rs" prefix when displaying the price in the adapter view
         holder.priceTextView.setText("Rs " + painting.getPrice());
 
-        // Load image using Glide with error handling
         Glide.with(context)
                 .load(painting.getImageUrl())
-                .placeholder(R.drawable.placeholder_image) // Add a placeholder image
-                .error(R.drawable.placeholder_image) // Add an error image
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Log.e("GLIDE_ERROR", "Error loading image: " + painting.getImageUrl(), e);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        Log.d("GLIDE_SUCCESS", "Image loaded successfully: " + painting.getImageUrl());
-                        return false;
-                    }
-                })
+                .placeholder(R.drawable.placeholder_image)
                 .centerCrop()
                 .into(holder.imageView);
 
-        // Set click listener
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, PaintingDetailActivity.class);
+            // Use painting title as the ID
+            intent.putExtra("paintingId", painting.getTitle());
             intent.putExtra("painting_name", painting.getTitle());
             intent.putExtra("artist_name", painting.getArtist());
-            // Pass the numeric price without "Rs" prefix
             intent.putExtra("painting_price", painting.getPrice());
             intent.putExtra("painting_image", painting.getImageUrl());
             intent.putExtra("painting_description", painting.getDescription());

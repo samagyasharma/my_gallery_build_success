@@ -86,18 +86,21 @@ public class PaintingDetailActivity extends AppCompatActivity {
         // Initialize views
         initializeViews();
         
+        // Get paintingId from intent
+        currentPaintingId = getIntent().getStringExtra("paintingId");
+        if (currentPaintingId == null) {
+            // Generate a fallback ID if none provided
+            currentPaintingId = "painting_" + System.currentTimeMillis();
+        }
+
         // Load the painting details
         loadPaintingDetails();
 
-        // Only setup comments if we have a paintingId
-        String paintingId = getIntent().getStringExtra("paintingId");
-        if (paintingId != null) {
-            currentPaintingId = paintingId;
-            if (commentsRecyclerView != null) {
-                setupCommentsRecyclerView();
-            }
-            setupCommentInput();
+        // Setup comments
+        if (commentsRecyclerView != null) {
+            setupCommentsRecyclerView();
         }
+        setupCommentInput();
 
         setupShareButton();
         setupImageClickListeners();
@@ -136,6 +139,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
 
     private void setupCommentsRecyclerView() {
         if (commentsRecyclerView == null || currentPaintingId == null) {
+            Log.e(TAG, "Comments RecyclerView or paintingId not properly initialized");
             return;
         }
 
@@ -143,6 +147,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
         
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         
+        // Use the painting name (title) as the document ID
         Query query = db.collection("paintings")
                 .document(currentPaintingId)
                 .collection("comments")
@@ -152,7 +157,6 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 .setQuery(query, Comment.class)
                 .build();
 
-        // Get the last used name from SharedPreferences
         String lastUsedName = getSharedPreferences("UserPrefs", MODE_PRIVATE)
                 .getString("lastUsedName", null);
         
@@ -209,32 +213,25 @@ public class PaintingDetailActivity extends AppCompatActivity {
     }
 
     private void setupCommentInput() {
-        if (commentSubmitButton == null) {
-            Log.e(TAG, "Comment submit button is null");
+        if (commentSubmitButton == null || commentEditText == null) {
+            Log.e(TAG, "Comment views not properly initialized");
             return;
         }
 
-        commentSubmitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (commentEditText == null) {
-                    Log.e(TAG, "Comment edit text is null");
-                    return;
-                }
-
-                String commentText = commentEditText.getText().toString().trim();
-                if (!commentText.isEmpty()) {
-                    showNameInputDialog(commentText);
-                } else {
-                    Toast.makeText(PaintingDetailActivity.this, 
-                        "Please enter a comment", Toast.LENGTH_SHORT).show();
-                }
+        commentSubmitButton.setOnClickListener(v -> {
+            String commentText = commentEditText.getText().toString().trim();
+            if (!commentText.isEmpty()) {
+                showNameInputDialog(commentText);
+            } else {
+                Toast.makeText(PaintingDetailActivity.this, 
+                    "Please enter a comment", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Make sure the button is clickable
+        // Ensure views are enabled and clickable
+        commentEditText.setEnabled(true);
+        commentSubmitButton.setEnabled(true);
         commentSubmitButton.setClickable(true);
-        commentSubmitButton.setFocusable(true);
     }
 
     private void showNameInputDialog(String commentText) {
@@ -268,25 +265,27 @@ public class PaintingDetailActivity extends AppCompatActivity {
     }
 
     private void submitComment(String commentText, String userName) {
-        // Save the user's name for future use
+        if (currentPaintingId == null) {
+            Log.e(TAG, "No painting ID available");
+            Toast.makeText(this, "Error: Cannot post comment", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Save the user's name
         getSharedPreferences("UserPrefs", MODE_PRIVATE)
                 .edit()
                 .putString("lastUsedName", userName)
                 .apply();
         
-        // Update current user name in the adapter
         if (commentsAdapter != null) {
             commentsAdapter.setCurrentUserName(userName);
         }
-        
-        // Create a Firestore Timestamp for the current time
-        Timestamp timestamp = Timestamp.now();
 
         Comment comment = new Comment(
                 commentText,
                 "anonymous",
                 userName,
-                timestamp,  // Use Firestore Timestamp instead of String
+                Timestamp.now(),
                 currentPaintingId
         );
 
@@ -300,6 +299,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to post comment", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error posting comment", e);
                 });
     }
 
@@ -478,8 +478,10 @@ public class PaintingDetailActivity extends AppCompatActivity {
     private void loadPaintingDetails() {
         Intent intent = getIntent();
         if (intent != null) {
-            // Get all painting details
+            // Get painting name which is now also the ID
             paintingName = intent.getStringExtra("painting_name");
+            currentPaintingId = paintingName; // Use painting name as ID
+            
             paintingResId = intent.getIntExtra("paintingResId", 0);
             paintingImage = intent.getStringExtra("painting_image");
             String artistName = intent.getStringExtra("artist_name");

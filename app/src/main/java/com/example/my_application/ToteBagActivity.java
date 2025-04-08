@@ -95,7 +95,7 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
 
     private void updateEmptyState() {
         if (paintings == null || paintings.isEmpty()) {
-            Log.d(TAG, "Tote bag is empty");
+            Log.d(TAG, "Your bag is empty");
             emptyStateText.setVisibility(View.VISIBLE);
             toteBagRecyclerView.setVisibility(View.GONE);
             buyNowButton.setEnabled(false);

@@ -338,11 +338,11 @@ public class PaintingDetailActivity extends AppCompatActivity {
             ToteBag toteBag = ToteBag.getInstance(this);
             if (toteBag.isPaintingInBag(currentPainting)) {
                 toteBag.removePainting(currentPainting);
-                Toast.makeText(this, "Removed from Tote Bag", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Removed from Your Bag", Toast.LENGTH_SHORT).show();
                 heartButton.setImageResource(R.drawable.ic_heart_white);
             } else {
                 toteBag.addPainting(currentPainting);
-                Toast.makeText(this, "Added to Tote Bag", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Added to Your Bag. Go to bag", Toast.LENGTH_SHORT).show();
                 heartButton.setImageResource(R.drawable.ic_heart_red);
             }
         });
@@ -352,8 +352,9 @@ public class PaintingDetailActivity extends AppCompatActivity {
         addToToteBagButton.setOnClickListener(v -> {
             ToteBag toteBag = ToteBag.getInstance(this);
             
-            // Ensure price is not null
-            String price = paintingPrice != null ? paintingPrice : "0";
+            // Get the raw price from the TextView instead of using paintingPrice variable
+            String displayedPrice = paintingPriceText.getText().toString();
+            String cleanPrice = displayedPrice.replace("Price: Rs ", "").trim();
             
             // Create a painting object with all necessary information
             Painting paintingToAdd;
@@ -362,7 +363,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 paintingToAdd = new Painting(
                     paintingName,
                     artistName,
-                    price,  // Use validated price
+                    cleanPrice,  // Use cleaned price from TextView
                     paintingResId
                 );
             } else {
@@ -370,17 +371,17 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 paintingToAdd = new Painting(
                     paintingName,
                     artistName,
-                    price,  // Use validated price
+                    cleanPrice,  // Use cleaned price from TextView
                     paintingImage  // URL for featured paintings
                 );
             }
 
             if (!toteBag.isPaintingInBag(paintingToAdd)) {
                 toteBag.addPainting(paintingToAdd);
-                Toast.makeText(this, "Added to Tote Bag", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Added to Your Bag. Go to bag", Toast.LENGTH_SHORT).show();
                 updateHeartButtonState(paintingToAdd);
             } else {
-                Toast.makeText(this, "Already in Tote Bag", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Already in Your Bag", Toast.LENGTH_SHORT).show();
             }
         });
     }

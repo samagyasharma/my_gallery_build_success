@@ -205,11 +205,12 @@
             android:layout_height="48dp"
             android:layout_weight="4"
             android:text="Send"
-            android:textColor="#FFF"
-            android:padding="4dp"
+            android:textColor="#FFFFFF"
+            android:clickable="true"
+            android:focusable="true"
             android:layout_marginStart="8dp"
             android:textSize="14sp"
-            style="@style/RoundedButton"
+            style="@style/Widget.AppCompat.Button"
             android:background="@drawable/rounded_button"
             android:layout_gravity="center_vertical" />
     </LinearLayout>

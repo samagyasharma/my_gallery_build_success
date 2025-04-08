@@ -77,9 +77,10 @@ public class PaintingDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_painting_detail);
 
-        // Initialize Firebase only if needed
+        // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        commentsRef = db.collection("comments");
 
         // Initialize views
         initializeViews();
@@ -89,24 +90,33 @@ public class PaintingDetailActivity extends AppCompatActivity {
 
         // Only setup comments if we have a paintingId
         String paintingId = getIntent().getStringExtra("paintingId");
-        if (paintingId != null && commentsRecyclerView != null) {
-            setupCommentsRecyclerView();
+        if (paintingId != null) {
+            currentPaintingId = paintingId;
+            if (commentsRecyclerView != null) {
+                setupCommentsRecyclerView();
+            }
             setupCommentInput();
         }
 
         setupShareButton();
+        setupImageClickListeners();
     }
 
     private void initializeViews() {
         paintingImageView = findViewById(R.id.paintingImageView);
         paintingTitle = findViewById(R.id.paintingTitle);
-        paintingDescription = findViewById(R.id.paintingDescription);  // Make sure this ID matches your layout
+        paintingDescription = findViewById(R.id.paintingDescription);
         artistNameText = findViewById(R.id.artistName);
         paintingPriceText = findViewById(R.id.paintingPrice);
         heartButton = findViewById(R.id.heartButton);
         shareButton = findViewById(R.id.shareButton);
         addToToteBagButton = findViewById(R.id.addToToteBagButton);
         zoomIcon = findViewById(R.id.zoomIcon);
+        
+        // Initialize comment-related views
+        commentsRecyclerView = findViewById(R.id.commentsRecyclerView);
+        commentEditText = findViewById(R.id.commentEditText);
+        commentSubmitButton = findViewById(R.id.commentSubmitButton);
     }
 
     private int parsePrice(String paintingPrice) {
@@ -203,15 +213,32 @@ public class PaintingDetailActivity extends AppCompatActivity {
     }
 
     private void setupCommentInput() {
-        commentSubmitButton.setOnClickListener(v -> {
-            String commentText = commentEditText.getText().toString().trim();
-            if (!commentText.isEmpty()) {
-                // Show dialog to get user's name
-                showNameInputDialog(commentText);
-            } else {
-                Toast.makeText(this, "Please enter a comment", Toast.LENGTH_SHORT).show();
+        if (commentSubmitButton == null) {
+            Log.e(TAG, "Comment submit button is null");
+            return;
+        }
+
+        commentSubmitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (commentEditText == null) {
+                    Log.e(TAG, "Comment edit text is null");
+                    return;
+                }
+
+                String commentText = commentEditText.getText().toString().trim();
+                if (!commentText.isEmpty()) {
+                    showNameInputDialog(commentText);
+                } else {
+                    Toast.makeText(PaintingDetailActivity.this, 
+                        "Please enter a comment", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
+        // Make sure the button is clickable
+        commentSubmitButton.setClickable(true);
+        commentSubmitButton.setFocusable(true);
     }
 
     private void showNameInputDialog(String commentText) {

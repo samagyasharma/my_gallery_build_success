@@ -1,6 +1,7 @@
 package com.example.my_application;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -295,6 +297,11 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 .add(comment)
                 .addOnSuccessListener(documentReference -> {
                     commentEditText.setText("");
+                    
+                    // Hide keyboard using INPUT_METHOD_SERVICE
+                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(commentEditText.getWindowToken(), 0);
+                    
                     Toast.makeText(this, "Comment posted successfully", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {

@@ -46,25 +46,25 @@ public class MainActivity extends AppCompatActivity {
     };
 
     String[] paintingNames = {
-            "Sunset Bliss",
-            "Ocean Waves",
-            "Mystic Forest",
-            "Golden Horizon",
-            "Abstract Dreams",
-            "Silent Night",
-            "Serene Beauty",
-            "Colorful Chaos"
+            "Savanna",
+            "Hibiscus",
+            "Early Morning",
+            "Gulmohar",
+            "Village Life",
+            "Storm",
+            "Roses",
+            "Sunflowers"
     };
 
     String[] paintingDescriptions = {
-            "A beautiful sunset over the ocean",
-            "Waves crashing on the shore",
-            "A mystical forest at dawn",
-            "Golden light on the horizon",
-            "Abstract patterns and colors",
-            "A peaceful night scene",
-            "Serene landscape with mountains",
-            "Colorful abstract composition"
+            "Acrylic on canvas",
+            "Acrylic on canvas",
+            "Watercolor on paper",
+            "Watercolor on paper",
+            "Watercolor on paper",
+            "Watercolor on paper",
+            "Mixed media on paper",
+            "Mixed media on paper"
     };
 
     String[] paintingPrices = {

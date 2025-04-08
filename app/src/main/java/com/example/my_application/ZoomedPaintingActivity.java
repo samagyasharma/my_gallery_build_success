@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.TextView;
+import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
@@ -16,6 +17,7 @@ public class ZoomedPaintingActivity extends AppCompatActivity {
     private PhotoView zoomableImageView;
     private TextView zoomHintText;
     private TextView titleText;
+    private ImageButton backButton;
     private boolean isHintVisible = true;
     private long lastTapTime = 0;
     private static final long DOUBLE_TAP_TIMEOUT = 300; // milliseconds
@@ -29,6 +31,10 @@ public class ZoomedPaintingActivity extends AppCompatActivity {
         zoomableImageView = findViewById(R.id.zoomableImageView);
         zoomHintText = findViewById(R.id.zoomHintText);
         titleText = findViewById(R.id.titleText);
+        backButton = findViewById(R.id.backButton);
+
+        // Set up back button
+        backButton.setOnClickListener(v -> finish());
 
         // Get painting details from intent
         String paintingName = getIntent().getStringExtra("paintingName");

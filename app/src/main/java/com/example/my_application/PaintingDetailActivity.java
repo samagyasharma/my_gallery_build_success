@@ -30,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.Timestamp;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -278,14 +279,14 @@ public class PaintingDetailActivity extends AppCompatActivity {
             commentsAdapter.setCurrentUserName(userName);
         }
         
-        String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                .format(new Date());
+        // Create a Firestore Timestamp for the current time
+        Timestamp timestamp = Timestamp.now();
 
         Comment comment = new Comment(
                 commentText,
                 "anonymous",
                 userName,
-                timestamp,
+                timestamp,  // Use Firestore Timestamp instead of String
                 currentPaintingId
         );
 

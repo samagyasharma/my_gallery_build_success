@@ -16,18 +16,24 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.Timestamp;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class CommentsAdapter extends FirestoreRecyclerAdapter<Comment, CommentsAdapter.CommentViewHolder> {
 
     private Context context;
     private FirebaseFirestore db;
     private String currentUserName;
+    private SimpleDateFormat dateFormat;
 
     public CommentsAdapter(@NonNull FirestoreRecyclerOptions<Comment> options, Context context, String currentUserName) {
         super(options);
         this.context = context;
         this.db = FirebaseFirestore.getInstance();
         this.currentUserName = currentUserName;
+        this.dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
     }
 
     public void setCurrentUserName(String userName) {
@@ -45,17 +51,15 @@ public class CommentsAdapter extends FirestoreRecyclerAdapter<Comment, CommentsA
 
     @Override
     protected void onBindViewHolder(@NonNull CommentViewHolder holder, int position, @NonNull Comment comment) {
-        Log.d("CommentsAdapter", "Binding comment at position " + position + 
-                ": text=" + comment.getText() + 
-                ", user=" + comment.getUserName() + 
-                ", timestamp=" + comment.getTimestamp() +
-                ", currentUser=" + currentUserName);
-
         holder.commentText.setText(comment.getText());
         holder.userName.setText(comment.getUserName());
-        holder.timestamp.setText(comment.getTimestamp());
+        
+        // Get timestamp and format it
+        Timestamp timestamp = comment.getTimestamp();
+        String formattedDate = dateFormat.format(timestamp.toDate());
+        holder.timestamp.setText(formattedDate);
 
-        // Show delete button only if the current user is the comment owner
+        // Show delete button only for comment owner
         if (currentUserName != null && currentUserName.equals(comment.getUserName())) {
             holder.deleteButton.setVisibility(View.VISIBLE);
             holder.deleteButton.setOnClickListener(v -> {
@@ -65,12 +69,10 @@ public class CommentsAdapter extends FirestoreRecyclerAdapter<Comment, CommentsA
                         .collection("comments")
                         .document(snapshot.getId())
                         .delete()
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(context, "Comment deleted", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(context, "Failed to delete comment", Toast.LENGTH_SHORT).show();
-                        });
+                        .addOnSuccessListener(aVoid -> 
+                            Toast.makeText(context, "Comment deleted", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> 
+                            Toast.makeText(context, "Failed to delete comment", Toast.LENGTH_SHORT).show());
             });
         } else {
             holder.deleteButton.setVisibility(View.GONE);

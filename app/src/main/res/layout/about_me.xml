@@ -156,7 +156,7 @@
                         android:id="@+id/contactInfo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Email: samagya.sharma@samsung.com\nPhone: (123) 456-7890"
+                        android:text="Email: samagyasharma05@gmail.com"
                         android:textSize="16sp"
                         android:textColor="#333333"
         android:fontFamily="@font/lora"

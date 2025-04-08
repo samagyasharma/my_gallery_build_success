@@ -7,7 +7,7 @@
     tools:context=".MainActivity"
     android:background="#FFF5EB">
 
-    <com.example.my_application.MovingBackgroundView
+    <com.example.my_application.MovingBackgroundMain
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

@@ -63,6 +63,9 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
             Log.d(TAG, "Painting in tote bag: " + p.getTitle() + ", Price: " + p.getPrice());
         }
 
+        // Initialize total as 0
+        totalText.setText("Your total: Rs 0");
+
         // Set up adapter
         toteBagAdapter = new ToteBagAdapter(paintings, this);
         toteBagRecyclerView.setAdapter(toteBagAdapter);
@@ -89,8 +92,6 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
                 Toast.makeText(this, "Please select items to purchase", Toast.LENGTH_SHORT).show();
             }
         });
-
-        updateTotalPrice();
     }
 
     private void updateEmptyState() {
@@ -112,13 +113,14 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
         super.onResume();
         // Refresh the list when activity resumes
         paintings = ToteBag.getInstance(this).getSelectedPaintings();
-        Log.d(TAG, "onResume: Number of paintings: " + paintings.size());
         if (toteBagAdapter != null) {
             toteBagAdapter.updatePaintings(paintings);
             toteBagAdapter.notifyDataSetChanged();
         }
         updateEmptyState();
-        updateTotalPrice();
+        // Reset total to 0 and recalculate based on selected items
+        totalText.setText("Your total: Rs 0");
+        onCheckboxChanged();
     }
 
     @Override
@@ -131,7 +133,7 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
                 toteBagAdapter.updatePaintings(paintings);
                 toteBagAdapter.notifyDataSetChanged();
                 updateEmptyState();
-                updateTotalPrice();
+                onCheckboxChanged();  // Replace updateTotalPrice() with onCheckboxChanged()
             }
         }
     }
@@ -153,7 +155,6 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
                     String price = painting.getPrice();
                     if (price != null) {
                         try {
-                            // Price is already numeric, no need to remove "Rs"
                             total += Integer.parseInt(price);
                         } catch (NumberFormatException e) {
                             Log.e(TAG, "Error parsing price for painting: " + painting.getTitle(), e);
@@ -165,12 +166,8 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
         totalText.setText("Your total: Rs " + total);
     }
 
-    private void updateTotalPrice() {
-        if (totalText != null) {
-            int total = calculateSelectedTotal();
-            totalText.setText("Your total: Rs " + total);
-        }
-    }
+    // Remove or modify updateTotalPrice() as it's no longer needed
+    // since we're using onCheckboxChanged() for all total updates
 
     private int calculateSelectedTotal() {
         int total = 0;

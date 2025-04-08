@@ -123,18 +123,25 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
 
     @Override
     public void onPaintingRemoved(int position) {
-        if (position >= 0 && position < paintings.size()) {
+        if (paintings != null && position >= 0 && position < paintings.size()) {
             Painting painting = paintings.get(position);
-            ToteBag.getInstance(this).removePainting(painting);
-            toteBagAdapter.updatePaintings(ToteBag.getInstance(this).getSelectedPaintings());
-            toteBagAdapter.notifyDataSetChanged();
-            updateEmptyState();
-            updateTotalPrice();
+            if (painting != null) {
+                ToteBag.getInstance(this).removePainting(painting);
+                paintings = ToteBag.getInstance(this).getSelectedPaintings();
+                toteBagAdapter.updatePaintings(paintings);
+                toteBagAdapter.notifyDataSetChanged();
+                updateEmptyState();
+                updateTotalPrice();
+            }
         }
     }
 
     @Override
     public void onCheckboxChanged() {
+        if (totalText == null || paintings == null) {
+            return;
+        }
+        
         int total = 0;
         for (int i = 0; i < paintings.size(); i++) {
             RecyclerView.ViewHolder viewHolder = 
@@ -143,11 +150,14 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
                 CheckBox checkbox = viewHolder.itemView.findViewById(R.id.paintingCheckbox);
                 if (checkbox != null && checkbox.isChecked()) {
                     Painting painting = paintings.get(i);
-                    String priceStr = painting.getPrice().replaceAll("[^0-9]", "");
-                    try {
-                        total += Integer.parseInt(priceStr);
-                    } catch (NumberFormatException e) {
-                        Log.e(TAG, "Error parsing price for painting: " + painting.getTitle(), e);
+                    String price = painting.getPrice();
+                    if (price != null) {
+                        try {
+                            // Price is already numeric, no need to remove "Rs"
+                            total += Integer.parseInt(price);
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG, "Error parsing price for painting: " + painting.getTitle(), e);
+                        }
                     }
                 }
             }
@@ -156,18 +166,29 @@ public class ToteBagActivity extends AppCompatActivity implements ToteBagAdapter
     }
 
     private void updateTotalPrice() {
-        int total = calculateSelectedTotal();
-        totalText.setText("Your total: Rs " + total);
+        if (totalText != null) {
+            int total = calculateSelectedTotal();
+            totalText.setText("Your total: Rs " + total);
+        }
     }
 
     private int calculateSelectedTotal() {
         int total = 0;
+        if (paintings == null) {
+            return total;
+        }
+        
         for (Painting painting : paintings) {
-            String priceStr = painting.getPrice().replaceAll("[^0-9]", "");
-            try {
-                total += Integer.parseInt(priceStr);
-            } catch (NumberFormatException e) {
-                Log.e(TAG, "Error parsing price for painting: " + painting.getTitle(), e);
+            String price = painting.getPrice();
+            if (price != null) {
+                try {
+                    // Price is already numeric, no need to remove "Rs"
+                    total += Integer.parseInt(price);
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "Error parsing price for painting: " + painting.getTitle(), e);
+                }
+            } else {
+                Log.w(TAG, "Null price found for painting: " + painting.getTitle());
             }
         }
         return total;

@@ -344,6 +344,9 @@ public class PaintingDetailActivity extends AppCompatActivity {
         addToToteBagButton.setOnClickListener(v -> {
             ToteBag toteBag = ToteBag.getInstance(this);
             
+            // Ensure price is not null
+            String price = paintingPrice != null ? paintingPrice : "0";
+            
             // Create a painting object with all necessary information
             Painting paintingToAdd;
             if (paintingResId != 0) {
@@ -351,7 +354,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 paintingToAdd = new Painting(
                     paintingName,
                     artistName,
-                    paintingPrice,
+                    price,  // Use validated price
                     paintingResId
                 );
             } else {
@@ -359,7 +362,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 paintingToAdd = new Painting(
                     paintingName,
                     artistName,
-                    paintingPrice,
+                    price,  // Use validated price
                     paintingImage  // URL for featured paintings
                 );
             }
@@ -401,8 +404,8 @@ public class PaintingDetailActivity extends AppCompatActivity {
         // Set artist name
         artistNameText.setText("Artist: " + artist);
         
-        // Set painting price
-        paintingPriceText.setText("Price: " + price);
+        // Set painting price with "Rs" prefix
+        paintingPriceText.setText("Price: Rs " + price);
         
         // Set painting image from resource ID
         if (paintingResId != 0) {
@@ -494,7 +497,7 @@ public class PaintingDetailActivity extends AppCompatActivity {
             }
             
             if (paintingPriceText != null && paintingPrice != null) {
-                paintingPriceText.setText("Price: " + paintingPrice);
+                paintingPriceText.setText("Price: Rs " + paintingPrice);
                 paintingPriceText.setVisibility(View.VISIBLE);
             }
             

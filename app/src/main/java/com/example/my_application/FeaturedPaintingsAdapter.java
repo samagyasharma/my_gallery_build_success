@@ -39,14 +39,10 @@ public class FeaturedPaintingsAdapter extends RecyclerView.Adapter<FeaturedPaint
     public void onBindViewHolder(@NonNull PaintingViewHolder holder, int position) {
         Painting painting = paintings.get(position);
         
-        // Add logging to debug data binding
-        Log.d("ADAPTER_BINDING", "Binding painting at position " + position);
-        Log.d("ADAPTER_BINDING", "Title: " + painting.getTitle());
-        Log.d("ADAPTER_BINDING", "ImageUrl: " + painting.getImageUrl());
-        
         holder.titleTextView.setText(painting.getTitle());
         holder.artistTextView.setText(painting.getArtist());
-        holder.priceTextView.setText("Rs. " + painting.getPrice());
+        // Add "Rs" prefix when displaying the price in the adapter view
+        holder.priceTextView.setText("Rs " + painting.getPrice());
 
         // Load image using Glide with error handling
         Glide.with(context)
@@ -74,7 +70,8 @@ public class FeaturedPaintingsAdapter extends RecyclerView.Adapter<FeaturedPaint
             Intent intent = new Intent(context, PaintingDetailActivity.class);
             intent.putExtra("painting_name", painting.getTitle());
             intent.putExtra("artist_name", painting.getArtist());
-            intent.putExtra("painting_price", "Rs. " + painting.getPrice());
+            // Pass the numeric price without "Rs" prefix
+            intent.putExtra("painting_price", painting.getPrice());
             intent.putExtra("painting_image", painting.getImageUrl());
             intent.putExtra("painting_description", painting.getDescription());
             context.startActivity(intent);

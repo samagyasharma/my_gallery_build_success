@@ -49,6 +49,7 @@ public class ToteBagAdapter extends RecyclerView.Adapter<ToteBagAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Painting painting = paintings.get(position);
         holder.paintingNameText.setText(painting.getTitle());
+        // Add "Rs" prefix when displaying the price
         holder.paintingPriceText.setText("Rs " + painting.getPrice());
         holder.paintingCheckbox.setChecked(false);  // Default state
 

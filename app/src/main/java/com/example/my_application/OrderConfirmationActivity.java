@@ -100,7 +100,7 @@ public class OrderConfirmationActivity extends AppCompatActivity {
         for (Painting painting : selectedPaintings) {
             details.append("- ").append(painting.getTitle())
                    .append(" by ").append(painting.getArtist())
-                   .append(": ").append(painting.getPrice()).append("\n");
+                   .append(": Rs ").append(painting.getPrice()).append("\n");
 
             // Parse price string to get numeric value
             String priceStr = painting.getPrice().replaceAll("[^0-9.]", "");
@@ -111,8 +111,9 @@ public class OrderConfirmationActivity extends AppCompatActivity {
             }
         }
 
-        details.append("\nTotal: $").append(String.format("%.2f", total));
+        details.append("\nTotal: Rs ").append(String.format("%.2f", total));
         orderDetailsTextView.setText(details.toString());
+        totalPriceText.setText("Total: Rs " + String.format("%.2f", total));
     }
 
     private void setupButtons() {
@@ -160,36 +161,64 @@ public class OrderConfirmationActivity extends AppCompatActivity {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GOOGLE_FORM_URL,
                 response -> {
-                    // Success handling
                     Toast.makeText(this, "Order submitted successfully!", Toast.LENGTH_LONG).show();
                     
                     // Remove selected paintings from ToteBag
                     ToteBag toteBag = ToteBag.getInstance(this);
                     for (Painting painting : selectedPaintings) {
-                        // Log before removal attempt
                         Log.d("OrderConfirmation", "Attempting to remove painting: " + painting.getTitle());
                         boolean removed = toteBag.removePainting(painting);
                         Log.d("OrderConfirmation", "Removal success: " + removed);
                     }
 
-                    // Log remaining paintings in tote bag
                     List<Painting> remainingPaintings = toteBag.getSelectedPaintings();
                     Log.d("OrderConfirmation", "Remaining paintings in tote bag: " + remainingPaintings.size());
 
-                    // Navigate back to the main screen
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     finish();
                 },
                 error -> {
-                    // Error handling
                     Toast.makeText(this, "Failed to submit order. Please try again.", Toast.LENGTH_LONG).show();
                 }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put(ENTRY_ORDER_DETAILS, messageBody);
+                StringBuilder orderDetails = new StringBuilder();
+                orderDetails.append("Order Details:\n\n");
+                double total = 0.0;
+
+                for (Painting painting : selectedPaintings) {
+                    String price = painting.getPrice();
+                    orderDetails.append("- ").append(painting.getTitle())
+                               .append(" by ").append(painting.getArtist())
+                               .append(": Rs ").append(price).append("\n");
+
+                    try {
+                        String priceStr = price.replaceAll("[^0-9.]", "");
+                        total += Double.parseDouble(priceStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                orderDetails.append("\nTotal Amount: Rs ").append(String.format("%.2f", total));
+
+                String finalMessage = String.format(
+                    "Order Confirmation\n\n" +
+                    "Customer: %s\n" +
+                    "Email: %s\n" +
+                    "Delivery Address: %s\n\n" +
+                    "%s\n\n" +
+                    "Thank you for your order!",
+                    nameInput.getText().toString().trim(),
+                    emailInput.getText().toString().trim(),
+                    addressInput.getText().toString().trim(),
+                    orderDetails.toString()
+                );
+
+                params.put(ENTRY_ORDER_DETAILS, finalMessage);
                 return params;
             }
         };

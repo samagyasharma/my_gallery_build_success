@@ -45,10 +45,23 @@ public class ToteBag {
         // Find the painting to remove
         Painting paintingToRemove = null;
         for (Painting p : selectedPaintings) {
-            if (p.getTitle().equals(painting.getTitle()) && 
-                p.getArtist().equals(painting.getArtist())) {
-                paintingToRemove = p;
-                break;
+            if (p == null) continue;
+            
+            // Check if it's a URL-based painting
+            if (p.isUrlBased() && painting.isUrlBased()) {
+                if (safeStringEquals(p.getTitle(), painting.getTitle()) && 
+                    safeStringEquals(p.getImageUrl(), painting.getImageUrl())) {
+                    paintingToRemove = p;
+                    break;
+                }
+            } 
+            // Check if it's a resource-based painting
+            else if (!p.isUrlBased() && !painting.isUrlBased()) {
+                if (safeStringEquals(p.getTitle(), painting.getTitle()) && 
+                    p.getImageResId() == painting.getImageResId()) {
+                    paintingToRemove = p;
+                    break;
+                }
             }
         }
         
@@ -122,13 +135,23 @@ public class ToteBag {
     public int getTotalPrice() {
         int total = 0;
         for (Painting painting : selectedPaintings) {
-            String priceStr = painting.getPrice().replaceAll("[^0-9]", "");
-            try {
-                total += Integer.parseInt(priceStr);
-            } catch (NumberFormatException e) {
-                Log.e(TAG, "Error parsing price for painting: " + painting.getTitle(), e);
+            String price = painting.getPrice();
+            if (price != null) {
+                try {
+                    // Price is already numeric, no need to remove "Rs"
+                    total += Integer.parseInt(price);
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "Error parsing price for painting: " + painting.getTitle(), e);
+                }
             }
         }
         return total;
+    }
+
+    // Helper method for safe String comparison
+    private boolean safeStringEquals(String str1, String str2) {
+        if (str1 == str2) return true;
+        if (str1 == null || str2 == null) return false;
+        return str1.equals(str2);
     }
 }

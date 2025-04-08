@@ -68,14 +68,14 @@ public class MainActivity extends AppCompatActivity {
     };
 
     String[] paintingPrices = {
-            "$299",
-            "$349",
-            "$399",
-            "$449",
-            "$499",
-            "$549",
-            "$599",
-            "$649"
+            "1000",
+            "1000",
+            "1000",
+            "1000",
+            "1000",
+            "1000",
+            "1000",
+            "1000"
     };
 
     String[] paintingArtists = {

@@ -135,21 +135,17 @@ public class PaintingDetailActivity extends AppCompatActivity {
 
     private void setupCommentsRecyclerView() {
         if (commentsRecyclerView == null || currentPaintingId == null) {
-            return;  // Exit if RecyclerView or paintingId is not available
+            return;
         }
 
         Log.d(TAG, "Setting up comments recycler view for painting: " + currentPaintingId);
         
-        // Set up the layout manager
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         
-        // Query comments for this painting
         Query query = db.collection("paintings")
                 .document(currentPaintingId)
                 .collection("comments")
                 .orderBy("timestamp", Query.Direction.DESCENDING);
-
-        Log.d(TAG, "Firestore query path: paintings/" + currentPaintingId + "/comments");
 
         FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
                 .setQuery(query, Comment.class)
@@ -159,7 +155,6 @@ public class PaintingDetailActivity extends AppCompatActivity {
         String lastUsedName = getSharedPreferences("UserPrefs", MODE_PRIVATE)
                 .getString("lastUsedName", null);
         
-        // Set up adapter and attach to RecyclerView
         commentsAdapter = new CommentsAdapter(options, this, lastUsedName);
         commentsRecyclerView.setAdapter(commentsAdapter);
     }
@@ -278,21 +273,26 @@ public class PaintingDetailActivity extends AppCompatActivity {
                 .putString("lastUsedName", userName)
                 .apply();
         
-        // Update current user name
-        currentUserName = userName;
+        // Update current user name in the adapter
+        if (commentsAdapter != null) {
+            commentsAdapter.setCurrentUserName(userName);
+        }
         
         String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 .format(new Date());
 
         Comment comment = new Comment(
                 commentText,
-                "anonymous", // Since we don't have user authentication, using "anonymous" as userId
+                "anonymous",
                 userName,
                 timestamp,
                 currentPaintingId
         );
 
-        commentsRef.add(comment)
+        db.collection("paintings")
+                .document(currentPaintingId)
+                .collection("comments")
+                .add(comment)
                 .addOnSuccessListener(documentReference -> {
                     commentEditText.setText("");
                     Toast.makeText(this, "Comment posted successfully", Toast.LENGTH_SHORT).show();

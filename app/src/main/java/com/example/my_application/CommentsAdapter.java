@@ -30,6 +30,11 @@ public class CommentsAdapter extends FirestoreRecyclerAdapter<Comment, CommentsA
         this.currentUserName = currentUserName;
     }
 
+    public void setCurrentUserName(String userName) {
+        this.currentUserName = userName;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -43,7 +48,8 @@ public class CommentsAdapter extends FirestoreRecyclerAdapter<Comment, CommentsA
         Log.d("CommentsAdapter", "Binding comment at position " + position + 
                 ": text=" + comment.getText() + 
                 ", user=" + comment.getUserName() + 
-                ", timestamp=" + comment.getTimestamp());
+                ", timestamp=" + comment.getTimestamp() +
+                ", currentUser=" + currentUserName);
 
         holder.commentText.setText(comment.getText());
         holder.userName.setText(comment.getUserName());

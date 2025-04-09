@@ -55,6 +55,19 @@ public class OrderConfirmationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Check if we're being restored from recent apps
+        if (savedInstanceState != null) {
+            // Redirect to MainActivity
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | 
+                          Intent.FLAG_ACTIVITY_NEW_TASK | 
+                          Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_order_confirmation);
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -224,5 +237,41 @@ public class OrderConfirmationActivity extends AppCompatActivity {
         };
 
         queue.add(stringRequest);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // Handle new intents by redirecting to MainActivity
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | 
+                          Intent.FLAG_ACTIVITY_NEW_TASK | 
+                          Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(mainIntent);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // Clear any stored state
+        if (isFinishing()) {
+            clearReferences();
+        }
+    }
+
+    private void clearReferences() {
+        if (selectedPaintings != null) {
+            selectedPaintings.clear();
+        }
+        if (toteBagItems != null) {
+            toteBagItems.clear();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        clearReferences();
+        super.onDestroy();
     }
 }

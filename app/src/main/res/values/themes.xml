@@ -19,5 +19,7 @@
         <!-- No Action Bar -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <!-- Hide the title completely -->
+        <item name="android:windowNoTitle">true</item>
     </style>
 </resources>

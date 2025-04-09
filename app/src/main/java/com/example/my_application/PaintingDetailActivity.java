@@ -149,7 +149,9 @@ public class PaintingDetailActivity extends AppCompatActivity {
         
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         
-        // Use the painting name (title) as the document ID
+        // Add this line to prevent layout issues
+        commentsRecyclerView.setItemAnimator(null);
+        
         Query query = db.collection("paintings")
                 .document(currentPaintingId)
                 .collection("comments")
@@ -162,8 +164,15 @@ public class PaintingDetailActivity extends AppCompatActivity {
         String lastUsedName = getSharedPreferences("UserPrefs", MODE_PRIVATE)
                 .getString("lastUsedName", null);
         
+        if (commentsAdapter != null) {
+            commentsAdapter.stopListening();
+        }
+        
         commentsAdapter = new CommentsAdapter(options, this, lastUsedName);
         commentsRecyclerView.setAdapter(commentsAdapter);
+        
+        // Add this to handle adapter updates more gracefully
+        commentsRecyclerView.getRecycledViewPool().clear();
     }
 
     /**
@@ -311,16 +320,21 @@ public class PaintingDetailActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         if (commentsAdapter != null) {
-            commentsAdapter.startListening();
+            commentsAdapter.notifyDataSetChanged();
+            commentsRecyclerView.post(() -> {
+                if (commentsAdapter != null) {
+                    commentsAdapter.startListening();
+                }
+            });
         }
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
         if (commentsAdapter != null) {
             commentsAdapter.stopListening();
         }

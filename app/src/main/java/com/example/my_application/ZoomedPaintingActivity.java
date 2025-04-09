@@ -60,10 +60,11 @@ public class ZoomedPaintingActivity extends AppCompatActivity {
     }
 
     private void setupZoomListeners() {
-        // Set up double tap to exit
+        // Set up double tap to exit with zoom reset
         zoomableImageView.setOnClickListener(v -> {
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastTapTime < DOUBLE_TAP_TIMEOUT) {
+                zoomableImageView.setScale(1.0f);
                 finish();
             }
             lastTapTime = currentTime;
@@ -122,5 +123,24 @@ public class ZoomedPaintingActivity extends AppCompatActivity {
             });
             zoomHintText.startAnimation(fadeIn);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Reset zoom level before finishing
+        if (zoomableImageView != null) {
+            zoomableImageView.setScale(1.0f);
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Clean up resources
+        if (zoomableImageView != null) {
+            zoomableImageView.setScale(1.0f);
+            zoomableImageView.setOnScaleChangeListener(null);
+        }
+        super.onDestroy();
     }
 }

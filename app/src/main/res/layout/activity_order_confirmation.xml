@@ -77,7 +77,10 @@
                     android:hint="Enter Full Name"
                     android:textSize="16sp"
                     android:padding="12dp"
-                    android:background="@android:drawable/editbox_background" />
+                    android:textColorHint="#757575"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:textColor="?attr/colorOnSurface"
+                    android:background="@drawable/edit_text_background" />
 
                 <EditText
                     android:id="@+id/email"
@@ -86,8 +89,11 @@
                     android:hint="Enter Email"
                     android:textSize="16sp"
                     android:padding="12dp"
-                    android:background="@android:drawable/editbox_background"
+                    android:textColorHint="#757575"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:textColor="?attr/colorOnSurface"
                     android:inputType="textEmailAddress"
+                    android:background="@drawable/edit_text_background"
                     android:layout_marginTop="8dp" />
 
                 <EditText
@@ -97,7 +103,10 @@
                     android:hint="Enter Delivery Address"
                     android:textSize="16sp"
                     android:padding="12dp"
-                    android:background="@android:drawable/editbox_background"
+                    android:textColorHint="#757575"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:textColor="?attr/colorOnSurface"
+                    android:background="@drawable/edit_text_background"
                     android:layout_marginTop="8dp" />
             </LinearLayout>
 

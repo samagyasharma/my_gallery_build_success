@@ -12,19 +12,25 @@ android {
         applicationId = "com.example.my_application"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 1  // Increment this number for each release
+        versionName = "1.0.0"  // Semantic versioning (MAJOR.MINOR.PATCH)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        resourceConfigurations += listOf("en")  // Correct syntax for resConfig
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true  // Enable code shrinking
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            isShrinkResources = true
+            isZipAlignEnabled = true
         }
     }
     compileOptions {

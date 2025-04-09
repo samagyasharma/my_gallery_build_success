@@ -37,29 +37,47 @@
         </activity>
 
         <!-- Main Activity -->
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity" 
+            android:exported="false" />
 
         <!-- Main Activity -->
-        <activity android:name=".AboutMe" />
+        <activity android:name=".AboutMe" 
+            android:exported="false" />
 
         <!-- Main Activity -->
-        <activity android:name=".ContactMe" />
+        <activity android:name=".ContactMe" 
+            android:exported="false" />
 
         <!-- Main Activity -->
-        <activity android:name=".OrderConfirmationActivity" />
+        <activity
+            android:name=".OrderConfirmationActivity"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize"
+            android:clearTaskOnLaunch="true"
+            android:stateNotNeeded="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!-- Main Activity -->
-        <activity android:name=".CarouselPainting" />
+        <activity android:name=".CarouselPainting" 
+            android:exported="false" />
 
         <!-- Main Activity -->
-        <activity android:name=".DynamicBackground" />
+        <activity android:name=".DynamicBackground" 
+            android:exported="false" />
 
         <!-- Main Activity -->
-        <activity android:name=".ZoomedPaintingActivity" />
+        <activity android:name=".ZoomedPaintingActivity" 
+            android:exported="false" />
 
         <!-- Painting Detail Activity -->
         <activity android:name=".PaintingDetailActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:exported="false" />
 
         <!-- Tote Bag Activity -->
         <activity

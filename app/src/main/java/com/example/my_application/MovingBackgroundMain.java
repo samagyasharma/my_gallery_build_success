@@ -37,7 +37,7 @@ public class MovingBackgroundMain extends View {
     // Remove final modifier from colors array
     private int[] colors = {
         Color.parseColor("#FFB6C1"),  // Light pink for shapes
-        Color.parseColor("#FF69B4")   // Hot pink for shapes
+        Color.parseColor("#DB7093")   // Medium dark pink (replaced hot pink #FF69B4)
     };
 
     public MovingBackgroundMain(Context context, AttributeSet attrs) {

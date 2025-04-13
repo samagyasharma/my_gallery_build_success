@@ -6,7 +6,7 @@
     android:background="#FFF5EB">
 
     <!-- Moving Background -->
-    <com.example.my_application.MovingBackgroundMain
+    <com.example.my_application.MovingBackgroundView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

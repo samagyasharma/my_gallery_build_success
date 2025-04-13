@@ -32,7 +32,10 @@ public class MovingBackgroundView extends View {
     private final List<Shape> shapes = new ArrayList<>();
     private final Paint paint = new Paint();
     private final Random random = new Random();
-    private final int[] colors = {Color.parseColor("#FED981"), Color.parseColor("#FAA0A0")}; // Gold, Hot Pink
+    private final int[] colors = {
+        Color.parseColor("#FED981"),   // Gold (unchanged)
+        Color.parseColor("#BEB1E5")    // Soft purple/lavender (replaced #FAA0A0)
+    };
 
     public MovingBackgroundView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -61,8 +64,8 @@ public class MovingBackgroundView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // Fill the background with a gradient effect
-        canvas.drawColor(Color.parseColor("#F4C2C2")); // Light Pink background
+        // Fill the background with a dusky misty rose color
+        canvas.drawColor(Color.parseColor("#E8D4D1")); // Dusky Misty Rose background
 
         for (Shape shape : shapes) {
             paint.setShader(new RadialGradient(

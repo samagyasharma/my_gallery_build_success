@@ -32,7 +32,9 @@
             android:id="@+id/carouselContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center">
 
             <!-- First Image with Text -->
             <LinearLayout
@@ -40,14 +42,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginHorizontal="4dp">
+                android:layout_marginHorizontal="16dp">
 
                 <FrameLayout
                     android:layout_width="82dp"
                     android:layout_height="82dp"
                     android:background="@drawable/circle_background"
-                    android:elevation="12dp"
-                    android:translationZ="6dp"
+                    android:elevation="16dp"
+                    android:translationZ="8dp"
                     android:stateListAnimator="@null"
                     android:outlineAmbientShadowColor="#000000"
                     android:outlineSpotShadowColor="#000000"
@@ -82,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginHorizontal="4dp">
+                android:layout_marginHorizontal="16dp">
 
                 <FrameLayout
                     android:layout_width="82dp"
@@ -117,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginHorizontal="4dp">
+                android:layout_marginHorizontal="16dp">
 
                 <FrameLayout
                     android:layout_width="82dp"
@@ -169,11 +171,14 @@
     <LinearLayout
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:background="#FFFFFF"
-        android:elevation="8dp"
+        android:elevation="16dp"
+        android:translationZ="8dp"
+        android:outlineAmbientShadowColor="#000000"
+        android:outlineSpotShadowColor="#000000"
         android:gravity="center">
 
         <LinearLayout
@@ -186,6 +191,9 @@
             android:padding="8dp"
             android:clickable="true"
             android:focusable="true"
+            android:elevation="4dp"
+            android:translationZ="2dp"
+            android:stateListAnimator="@null"
             android:background="?attr/selectableItemBackground">
 
             <TextView
@@ -194,24 +202,30 @@
                 android:layout_height="wrap_content"
                 android:text="Your Bag"
                 android:textColor="#800080"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:fontFamily="@font/caveat"
-                android:padding="4dp" />
+                android:padding="4dp"
+                android:shadowColor="#40000000"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2" />
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_tote_bag"
                 android:layout_marginStart="4dp"
-                android:tint="#800080"/>
+                android:tint="#800080"
+                android:elevation="2dp"/>
         </LinearLayout>
 
         <View
             android:layout_width="1dp"
-            android:layout_height="match_parent"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
             android:background="#800080"
             android:alpha="0.3"
-            android:layout_marginHorizontal="16dp"/>
+            android:layout_marginHorizontal="8dp"/>
 
         <LinearLayout
             android:id="@+id/aboutMeLayout"
@@ -223,6 +237,9 @@
             android:padding="8dp"
             android:clickable="true"
             android:focusable="true"
+            android:elevation="4dp"
+            android:translationZ="2dp"
+            android:stateListAnimator="@null"
             android:background="?attr/selectableItemBackground">
 
             <TextView
@@ -231,24 +248,22 @@
                 android:layout_height="wrap_content"
                 android:text="About Me"
                 android:textColor="#800080"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:fontFamily="@font/caveat"
-                android:padding="4dp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_about_me"
-                android:layout_marginStart="4dp"
-                android:tint="#800080"/>
+                android:padding="4dp"
+                android:shadowColor="#40000000"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2" />
         </LinearLayout>
 
         <View
             android:layout_width="1dp"
-            android:layout_height="match_parent"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
             android:background="#800080"
             android:alpha="0.3"
-            android:layout_marginHorizontal="16dp"/>
+            android:layout_marginHorizontal="8dp"/>
 
         <LinearLayout
             android:id="@+id/contactLayout"
@@ -260,6 +275,9 @@
             android:padding="8dp"
             android:clickable="true"
             android:focusable="true"
+            android:elevation="4dp"
+            android:translationZ="2dp"
+            android:stateListAnimator="@null"
             android:background="?attr/selectableItemBackground">
 
             <TextView
@@ -268,18 +286,14 @@
                 android:layout_height="wrap_content"
                 android:text="Contact Me"
                 android:textColor="#800080"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:fontFamily="@font/caveat"
-                android:padding="4dp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_contact"
-                android:layout_marginStart="4dp"
-                android:tint="#800080"/>
+                android:padding="4dp"
+                android:shadowColor="#40000000"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2" />
         </LinearLayout>
-
     </LinearLayout>
 
 </RelativeLayout>

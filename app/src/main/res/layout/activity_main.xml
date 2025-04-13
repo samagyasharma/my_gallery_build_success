@@ -7,7 +7,7 @@
     tools:context=".MainActivity"
     android:background="#FFF5EB">
 
-    <com.example.my_application.MovingBackgroundMain
+    <com.example.my_application.MovingBackgroundView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -16,7 +16,7 @@
         android:id="@+id/featuredImage"
         android:layout_width="match_parent"
         android:layout_height="140dp"
-        android:src="@drawable/my_header_image"
+        android:src="@drawable/header"
         android:scaleType="centerCrop" />
 
     <!-- Featured Paintings Carousel -->
@@ -45,14 +45,22 @@
                 <FrameLayout
                     android:layout_width="82dp"
                     android:layout_height="82dp"
-                    android:background="@drawable/circle_background">
+                    android:background="@drawable/circle_background"
+                    android:elevation="12dp"
+                    android:translationZ="6dp"
+                    android:stateListAnimator="@null"
+                    android:outlineAmbientShadowColor="#000000"
+                    android:outlineSpotShadowColor="#000000"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
                         android:id="@+id/image1"
                         android:layout_width="75dp"
                         android:layout_height="75dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/carousel_painting1"
+                        android:src="@drawable/painting"
                         android:scaleType="centerCrop"/>
                 </FrameLayout>
 
@@ -79,14 +87,15 @@
                 <FrameLayout
                     android:layout_width="82dp"
                     android:layout_height="82dp"
-                    android:background="@drawable/circle_background">
+                    android:background="@drawable/circle_background"
+                    android:elevation="4dp">
 
                     <ImageView
                         android:id="@+id/image2"
                         android:layout_width="75dp"
                         android:layout_height="75dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/carousel_painting5"
+                        android:src="@drawable/artist_is"
                         android:scaleType="centerCrop"/>
                 </FrameLayout>
 
@@ -113,14 +122,15 @@
                 <FrameLayout
                     android:layout_width="82dp"
                     android:layout_height="82dp"
-                    android:background="@drawable/circle_background">
+                    android:background="@drawable/circle_background"
+                    android:elevation="4dp">
 
                     <ImageView
                         android:id="@+id/image3"
                         android:layout_width="75dp"
                         android:layout_height="75dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/carousel_painting3"
+                        android:src="@drawable/display_your"
                         android:scaleType="centerCrop"/>
                 </FrameLayout>
 

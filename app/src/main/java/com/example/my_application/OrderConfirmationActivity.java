@@ -111,8 +111,12 @@ public class OrderConfirmationActivity extends AppCompatActivity {
         details.append("Order Details:\n\n");
 
         for (Painting painting : selectedPaintings) {
+            String artistName = painting.getArtist() != null && !painting.getArtist().isEmpty() 
+                              ? painting.getArtist() 
+                              : "Unknown Artist";
+                              
             details.append("- ").append(painting.getTitle())
-                   .append(" by ").append(painting.getArtist())
+                   .append(" by ").append(artistName)
                    .append(": Rs ").append(painting.getPrice()).append("\n");
 
             // Parse price string to get numeric value
